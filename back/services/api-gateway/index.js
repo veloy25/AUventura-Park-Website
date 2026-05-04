@@ -8,6 +8,7 @@ const PORT = process.env.API_GATEWAY_PORT || 3000;
 
 const USER_SERVICE_URL = process.env.USER_SERVICE_URL || "http://localhost:3001";
 const DEPOIMENTOS_SERVICE_URL = process.env.DEPOIMENTOS_SERVICE_URL || "http://localhost:3002";
+const SCHEDULING_SERVICE_URL = process.env.SCHEDULING_SERVICE_URL || "http://localhost:3003";
 
 app.use(cors());
 app.use(express.json());
@@ -113,6 +114,40 @@ app.get("/api/depoimentos/:id", async (req, res) => {
   }
 });
 
+/**
+ * GET /api/agendamentos - Get current user appointments
+ * Forwards request to Scheduling Service
+ */
+app.get("/api/agendamentos", async (req, res) => {
+  try {
+    const response = await axios.get(`${SCHEDULING_SERVICE_URL}/`, {
+      headers: req.headers,
+    });
+    res.status(response.status).json(response.data);
+  } catch (error) {
+    const status = error.response?.status || 500;
+    const data = error.response?.data || { error: "Scheduling service error" };
+    res.status(status).json(data);
+  }
+});
+
+/**
+ * POST /api/agendamentos - Create a new appointment
+ * Forwards request to Scheduling Service
+ */
+app.post("/api/agendamentos", async (req, res) => {
+  try {
+    const response = await axios.post(`${SCHEDULING_SERVICE_URL}/`, req.body, {
+      headers: req.headers,
+    });
+    res.status(response.status).json(response.data);
+  } catch (error) {
+    const status = error.response?.status || 500;
+    const data = error.response?.data || { error: "Scheduling service error" };
+    res.status(status).json(data);
+  }
+});
+
 // 404 handler
 app.use((req, res) => {
   res.status(404).json({ error: "Rota não encontrada." });
@@ -122,6 +157,7 @@ app.listen(PORT, () => {
   console.log(`[API Gateway] listening on port ${PORT}`);
   console.log(`  User Service: ${USER_SERVICE_URL}`);
   console.log(`  Depoimentos Service: ${DEPOIMENTOS_SERVICE_URL}`);
+  console.log(`  Scheduling Service: ${SCHEDULING_SERVICE_URL}`);
 });
 
 module.exports = app;

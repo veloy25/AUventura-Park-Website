@@ -1,0 +1,11 @@
+CREATE TABLE IF NOT EXISTS agendamentos (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  nomeCachorro VARCHAR(100) NOT NULL,
+  servico VARCHAR(150) NOT NULL,
+  `data` DATE NOT NULL,
+  horario VARCHAR(50) NOT NULL,
+  observacoes TEXT,
+  criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id)
+);

@@ -7,6 +7,7 @@ This backend is organized as a microservices architecture with the following com
 - **API Gateway** (Port 3000) - Main entry point, routes requests to services
 - **User Service** (Port 3001) - Authentication & user management
 - **Testimonials Service** (Port 3002) - Testimonials management
+- **Scheduling Service** (Port 3003) - Appointments management
 - **Shared Modules** - Database, authentication, message bus
 - **Message Bus** - Event-driven communication between services
 
@@ -21,9 +22,13 @@ back/
 │   ├── user-service/             # User authentication service
 │   │   ├── index.js
 │   │   └── package.json
-│   └── testimonials-service/     # Testimonials service
+│   ├── testimonials-service/     # Testimonials service
+│   │   ├── index.js
+│   │   └── package.json
+│   └── agendamentos-service/     # Scheduling service
 │       ├── index.js
-│       └── package.json
+│       ├── package.json
+│       └── schema.sql
 ├── shared/                       # Shared utilities
 │   ├── messagebus.js            # Event bus for inter-service communication
 │   ├── database.js              # Database connection pool
@@ -66,6 +71,11 @@ cd ../..
 cd services/testimonials-service
 npm install
 cd ../..
+
+# Scheduling Service
+cd services/agendamentos-service
+npm install
+cd ../..
 ```
 
 3. **Start all services (in separate terminals):**
@@ -82,6 +92,10 @@ npm start
 # Terminal 3: Testimonials Service
 cd services/testimonials-service
 npm start
+
+# Terminal 4: Scheduling Service
+cd services/agendamentos-service
+npm start
 ```
 
 The API Gateway will be available at `http://localhost:3000`
@@ -97,6 +111,7 @@ This will start:
 - API Gateway (port 3000)
 - User Service (port 3001)
 - Testimonials Service (port 3002)
+- Scheduling Service (port 3003)
 
 ## API Endpoints
 
@@ -113,6 +128,11 @@ All endpoints are accessed through the API Gateway at `http://localhost:3000`
 - `GET /api/depoimentos` - Get all testimonials
 - `POST /api/depoimentos` - Create a new testimonial
 - `GET /api/depoimentos/:id` - Get a specific testimonial
+
+### Scheduling Service Endpoints
+
+- `GET /api/agendamentos` - Get current user appointments
+- `POST /api/agendamentos` - Create a new appointment
 
 ## Message Bus Events
 

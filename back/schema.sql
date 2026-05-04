@@ -26,6 +26,20 @@ CREATE TABLE IF NOT EXISTS depoimentos (
   criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Scheduling Service Tables
+CREATE TABLE IF NOT EXISTS agendamentos (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  nomeCachorro VARCHAR(100) NOT NULL,
+  servico VARCHAR(150) NOT NULL,
+  `data` DATE NOT NULL,
+  horario VARCHAR(50) NOT NULL,
+  observacoes TEXT,
+  criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
 -- Indexes for better query performance
 CREATE INDEX idx_email ON users(email);
 CREATE INDEX idx_criado_em ON depoimentos(criado_em);
+CREATE INDEX idx_agendamentos_user ON agendamentos(user_id);

@@ -24,9 +24,11 @@ services:
       PORT: 3000
       USER_SERVICE_URL: http://user-service:3001
       DEPOIMENTOS_SERVICE_URL: http://depoimentos-service:3002
+      SCHEDULING_SERVICE_URL: http://agendamentos-service:3003
     depends_on:
       - user-service
       - depoimentos-service
+      - agendamentos-service
     networks:
       - microservices
 
@@ -43,6 +45,8 @@ services:
       DB_PASSWORD: root
       DB_DATABASE: auventura
       DB_PORT: 3306
+      JWT_SECRET: super_secret_login_key
+      JWT_EXPIRATION: 2h
     depends_on:
       - mysql
     networks:
@@ -61,6 +65,28 @@ services:
       DB_PASSWORD: root
       DB_DATABASE: auventura
       DB_PORT: 3306
+      JWT_SECRET: super_secret_login_key
+      JWT_EXPIRATION: 2h
+    depends_on:
+      - mysql
+    networks:
+      - microservices
+
+  agendamentos-service:
+    build:
+      context: ./services/agendamentos-service
+    container_name: agendamentos-service
+    ports:
+      - "3003:3003"
+    environment:
+      SCHEDULING_SERVICE_PORT: 3003
+      DB_HOST: mysql
+      DB_USER: root
+      DB_PASSWORD: root
+      DB_DATABASE: auventura
+      DB_PORT: 3306
+      JWT_SECRET: super_secret_login_key
+      JWT_EXPIRATION: 2h
     depends_on:
       - mysql
     networks:
