@@ -1,6 +1,10 @@
 # Backend environment files
 back/.env
 
+# Node dependencies
+node_modules/
+front/node_modules/
+back/node_modules/
 
 # Frontend ignore rules
 front/logs
@@ -10,14 +14,13 @@ front/yarn-debug.log*
 front/yarn-error.log*
 front/pnpm-debug.log*
 front/lerna-debug.log*
-front/node_modules
 front/dist
 front/dist-ssr
 front/*.local
 
 # Editor directories and files
 
-##front end files and directories
+## Front end files and directories
 front/.vscode/*
 !front/.vscode/extensions.json
 front/.idea
@@ -28,7 +31,7 @@ front/*.njsproj
 front/*.sln
 front/*.sw?
 
-##backend files and directories
+## Backend files and directories
 back/.DS_Store
 back/microsservicos/.DS_Store
 .DS_Store

@@ -5,5 +5,5 @@ class EventBus extends EventEmitter{
         super()
     }
 }
-const EventBus = new EventBus();
+const eventBusInstance = new EventBus();
 export default EventBus;

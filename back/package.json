@@ -2,14 +2,15 @@
   "name": "back",
   "version": "1.0.0",
   "description": "",
-  "type": "module",
+  "type": "commonjs",
   "main": "index.js",
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon index.js"
+    "start": "npm run dev",
+    "dev": "concurrently \"npm run dev:gateway\" \"npm run dev:user\" \"npm run dev:depoimentos\" \"npm run dev:agendamentos\"",
+    "dev:gateway": "nodemon services/api-gateway/index.js",
+    "dev:user": "nodemon services/user-service/index.js",
+    "dev:depoimentos": "nodemon services/depoimentos-service/index.js",
+    "dev:agendamentos": "nodemon services/agendamentos-service/index.js"
   },
   "dependencies": {
     "axios": "^1.14.0",
@@ -20,5 +21,8 @@
     "jsonwebtoken": "^9.0.1",
     "mysql2": "^3.6.0",
     "nodemon": "^3.1.14"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
   }
 }
