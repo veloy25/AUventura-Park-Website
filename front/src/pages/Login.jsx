@@ -16,87 +16,100 @@ function Login({
   setAuthError,
   setFeedbackMessage,
 }) {
+  const isSignup = authMode === "signup";
+
+  const trocarModo = () => {
+    setAuthError("");
+    setFeedbackMessage("");
+    setAuthMode(isSignup ? "login" : "signup");
+  };
+
   return (
-    <section className="card login">
-      <h2 className="card-title login-title">
-        {authMode === "login" ? "Acesse sua conta" : "Crie sua conta"}
-      </h2>
+    <section className="login-page">
+      <div className="login-card">
+        <h2 className="section-title">
+          {isSignup ? "Criar conta" : "Entrar"}
+        </h2>
 
-      <p className="text login-text">
-        {authMode === "login"
-          ? "Faça login para gerenciar as informações do seu pet."
-          : "Cadastre-se para acessar o painel do tutor."}
-      </p>
+        <p className="login-description">
+          {isSignup
+            ? "Crie sua conta para acompanhar seu pet na AUventura Park."
+            : "Entre na sua conta para acessar a Área do Tutor."}
+        </p>
 
-      <form onSubmit={handleAuthSubmit} className="login-form">
-        {authMode === "signup" && (
-          <div className="form-group">
-            <label htmlFor="nome" className="form-label">Nome:</label>
+        {authError && <p className="form-error">{authError}</p>}
+
+        {feedbackMessage && (
+          <p className="form-success">{feedbackMessage}</p>
+        )}
+
+        <form className="login-form" onSubmit={handleAuthSubmit}>
+          {isSignup && (
+            <div className="login-form-group">
+              <label htmlFor="authName" className="login-label">
+                Nome:
+              </label>
+
+              <input
+                id="authName"
+                type="text"
+                className="login-input"
+                value={authName}
+                onChange={(event) => setAuthName(event.target.value)}
+                required
+              />
+            </div>
+          )}
+
+          <div className="login-form-group">
+            <label htmlFor="authEmail" className="login-label">
+              E-mail:
+            </label>
+
             <input
-              id="nome"
-              type="text"
-              className="form-input"
-              value={authName}
-              onChange={(event) => setAuthName(event.target.value)}
-              placeholder="Seu nome"
+              id="authEmail"
+              type="email"
+              className="login-input"
+              value={authEmail}
+              onChange={(event) => setAuthEmail(event.target.value)}
               required
             />
           </div>
-        )}
 
-        <div className="form-group">
-          <label htmlFor="email" className="form-label">E-mail:</label>
-          <input
-            id="email"
-            type="email"
-            className="form-input"
-            value={authEmail}
-            onChange={(event) => setAuthEmail(event.target.value)}
-            placeholder="seu@email.com"
-            required
-          />
-        </div>
+          <div className="login-form-group">
+            <label htmlFor="authPassword" className="login-label">
+              Senha:
+            </label>
 
-        <div className="form-group">
-          <label htmlFor="senha" className="form-label">Senha:</label>
-          <input
-            type="password"
-            id="senha"
-            className="form-input"
-            value={authPassword}
-            onChange={(event) => setAuthPassword(event.target.value)}
-            placeholder="senha"
-            required
-          />
-        </div>
+            <input
+              id="authPassword"
+              type="password"
+              className="login-input"
+              value={authPassword}
+              onChange={(event) => setAuthPassword(event.target.value)}
+              required
+            />
+          </div>
 
-        {authError && <p className="text auth-error">{authError}</p>}
-        {feedbackMessage && <p className="text auth-success">{feedbackMessage}</p>}
+          <button
+            type="submit"
+            className="primary-button full-width-button"
+            disabled={authLoading}
+          >
+            {authLoading
+              ? "Carregando..."
+              : isSignup
+              ? "Criar conta"
+              : "Entrar"}
+          </button>
+        </form>
 
-        <button
-          type="submit"
-          className="add-button full-width-button"
-          disabled={authLoading}
-        >
-          {authLoading
-            ? "Carregando..."
-            : authMode === "login"
-            ? "Entrar"
-            : "Criar conta"}
+        <button className="login-switch-button" onClick={trocarModo}>
+          {isSignup
+            ? "Já tenho conta. Fazer login"
+            : "Ainda não tenho conta. Criar cadastro"}
         </button>
-      </form>
-
-      <button
-        type="button"
-        className="add-button full-width-button switch-auth-button"
-        onClick={() => {
-          setAuthMode(authMode === "login" ? "signup" : "login");
-          setAuthError("");
-          setFeedbackMessage("");
-        }}
-      >
-        {authMode === "login" ? "Ainda não tenho conta" : "Já tenho conta"}
-      </button>
+      </div>
     </section>
   );
 }

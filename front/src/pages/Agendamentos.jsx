@@ -13,138 +13,192 @@ function Agendamentos({
   agendamentoFeedback,
   loadingAgendamentos,
 }) {
-  if (!isLogado) {
-    return (
-      <section className="card" style={{ textAlign: "center" }}>
-        <h2 className="card-title">Acesso restrito</h2>
-        <p className="text">
-          Para visualizar e criar agendamentos, você precisa fazer login.
-        </p>
-
-        <button
-          className="add-button"
-          onClick={() => {
-            setAuthMode("login");
-            setAbaAtiva("login");
-          }}
-        >
-          Fazer login
-        </button>
-      </section>
-    );
-  }
+  const abrirLogin = () => {
+    setAuthMode("login");
+    setAbaAtiva("login");
+  };
 
   return (
-    <section>
-      <h2 className="title">Agendamentos</h2>
+    <section className="agendamentos-page">
+      <div className="agendamentos-header">
+        <h2 className="page-title">Agendamentos</h2>
+      </div>
 
-      <section className="card depoimento-form">
-        <h3 className="card-title">Novo agendamento</h3>
+      {!isLogado && (
+        <section className="agendamento-alert-card">
+          <h3 className="section-title">Faça login para agendar</h3>
 
-        <p className="text">
-          Tutor logado: <strong>{user?.nome}</strong>
-        </p>
+          <p className="section-text">
+            Para criar ou visualizar seus agendamentos, você precisa entrar na
+            sua conta de tutor.
+          </p>
 
-        {agendamentoError && <p className="text auth-error">{agendamentoError}</p>}
-        {agendamentoFeedback && <p className="text auth-success">{agendamentoFeedback}</p>}
-
-        <form onSubmit={handleAgendamentoSubmit} className="login-form">
-          <div className="form-group">
-            <label className="form-label">Nome do cachorro:</label>
-            <input
-              name="nomeCachorro"
-              className="form-input"
-              value={novoAgendamento.nomeCachorro}
-              onChange={handleAgendamentoChange}
-              required
-            />
-          </div>
-
-          <div className="form-group">
-            <label className="form-label">Serviço:</label>
-            <select
-              name="servico"
-              className="form-input"
-              value={novoAgendamento.servico}
-              onChange={handleAgendamentoChange}
-              required
-            >
-              <option value="">Selecione</option>
-              <option value="Banho">Banho</option>
-              <option value="Tosa">Tosa</option>
-              <option value="Banho e Tosa">Banho e Tosa</option>
-              <option value="Creche">Creche</option>
-              <option value="Veterinário">Veterinário</option>
-            </select>
-          </div>
-
-          <div className="form-group">
-            <label className="form-label">Data:</label>
-            <input
-              type="date"
-              name="data"
-              className="form-input"
-              value={novoAgendamento.data}
-              onChange={handleAgendamentoChange}
-              min={new Date().toISOString().split("T")[0]}
-              required
-            />
-          </div>
-
-          <div className="form-group">
-            <label className="form-label">Horário:</label>
-            <input
-              type="time"
-              name="horario"
-              className="form-input"
-              value={novoAgendamento.horario}
-              onChange={handleAgendamentoChange}
-              required
-            />
-          </div>
-
-          <div className="form-group textarea-group">
-            <label className="form-label">Observações:</label>
-            <textarea
-              name="observacoes"
-              className="form-input form-textarea"
-              rows={3}
-              value={novoAgendamento.observacoes}
-              onChange={handleAgendamentoChange}
-            />
-          </div>
-
-          <button type="submit" className="add-button full-width-button">
-            Agendar
+          <button className="primary-button" onClick={abrirLogin}>
+            Fazer login
           </button>
-        </form>
-      </section>
+        </section>
+      )}
 
-      <section className="depoimentos-list">
-        <h3 className="card-title">Meus agendamentos</h3>
+      {isLogado && (
+        <>
+          <section className="agendamento-form-card">
+            <h3 className="section-title">
+              Novo agendamento para {user?.nome || "Tutor"}
+            </h3>
 
-        {loadingAgendamentos && <p className="text">Carregando agendamentos...</p>}
-
-        {!loadingAgendamentos && agendamentos.length === 0 && (
-          <p className="text">Você ainda não possui agendamentos.</p>
-        )}
-
-        {agendamentos.map((agendamento) => (
-          <div key={agendamento.id} className="card depoimento-card">
-            <h3 className="card-title">{agendamento.nomeCachorro}</h3>
-            <p className="text"><strong>Serviço:</strong> {agendamento.servico}</p>
-            <p className="text"><strong>Data:</strong> {agendamento.data}</p>
-            <p className="text"><strong>Horário:</strong> {agendamento.horario}</p>
-
-            {agendamento.observacoes && (
-              <div className="comment-box">
-                <p className="comment-title">Observações:</p>
-                <p className="comment-text">{agendamento.observacoes}</p>
-              </div>
+            {agendamentoError && (
+              <p className="form-error">{agendamentoError}</p>
             )}
-          </div>
-        ))}
-      </section>
+
+            {agendamentoFeedback && (
+              <p className="form-success">{agendamentoFeedback}</p>
+            )}
+
+            <form
+              className="agendamento-form"
+              onSubmit={handleAgendamentoSubmit}
+            >
+              <div className="agendamento-form-group">
+                <label htmlFor="nomeCachorro" className="agendamento-label">
+                  Nome do cachorro:
+                </label>
+
+                <input
+                  id="nomeCachorro"
+                  name="nomeCachorro"
+                  className="agendamento-input"
+                  value={novoAgendamento.nomeCachorro}
+                  onChange={handleAgendamentoChange}
+                  required
+                />
+              </div>
+
+              <div className="agendamento-form-group">
+                <label htmlFor="servico" className="agendamento-label">
+                  Serviço:
+                </label>
+
+                <select
+                  id="servico"
+                  name="servico"
+                  className="agendamento-input"
+                  value={novoAgendamento.servico}
+                  onChange={handleAgendamentoChange}
+                  required
+                >
+                  <option value="">Selecione um serviço</option>
+                  <option value="daycare">Daycare</option>
+                  <option value="banho">Banho</option>
+                  <option value="banho_tosa">Banho e tosa</option>
+                  <option value="hospedagem">Hospedagem</option>
+                </select>
+              </div>
+
+              <div className="agendamento-form-row">
+                <div className="agendamento-form-group">
+                  <label htmlFor="data" className="agendamento-label">
+                    Data:
+                  </label>
+
+                  <input
+                    id="data"
+                    name="data"
+                    type="date"
+                    className="agendamento-input"
+                    value={novoAgendamento.data}
+                    onChange={handleAgendamentoChange}
+                    required
+                  />
+                </div>
+
+                <div className="agendamento-form-group">
+                  <label htmlFor="horario" className="agendamento-label">
+                    Horário:
+                  </label>
+
+                  <input
+                    id="horario"
+                    name="horario"
+                    type="time"
+                    className="agendamento-input"
+                    value={novoAgendamento.horario}
+                    onChange={handleAgendamentoChange}
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="agendamento-form-group">
+                <label htmlFor="observacoes" className="agendamento-label">
+                  Observações:
+                </label>
+
+                <textarea
+                  id="observacoes"
+                  name="observacoes"
+                  className="agendamento-input agendamento-textarea"
+                  value={novoAgendamento.observacoes}
+                  onChange={handleAgendamentoChange}
+                  rows={4}
+                />
+              </div>
+
+              <button type="submit" className="primary-button full-width-button">
+                Criar agendamento
+              </button>
+            </form>
+          </section>
+
+          <section className="agendamentos-list">
+            <h3 className="section-title">Meus agendamentos</h3>
+
+            {loadingAgendamentos && (
+              <p className="section-text">Carregando agendamentos...</p>
+            )}
+
+            {!loadingAgendamentos && agendamentos.length === 0 && (
+              <p className="section-text">
+                Você ainda não possui agendamentos cadastrados.
+              </p>
+            )}
+
+            {agendamentos.map((agendamento) => (
+              <div key={agendamento.id} className="agendamento-card">
+                <h4 className="agendamento-card-title">
+                  {agendamento.nomeCachorro}
+                </h4>
+
+                <div className="agendamento-info-group">
+                  <p className="section-text">
+                    <strong>Serviço:</strong> {agendamento.servico}
+                  </p>
+
+                  <p className="section-text">
+                    <strong>Data:</strong>{" "}
+                    {new Date(agendamento.data).toLocaleDateString()}
+                  </p>
+
+                  <p className="section-text">
+                    <strong>Horário:</strong> {agendamento.horario}
+                  </p>
+                </div>
+
+                {agendamento.observacoes && (
+                  <div className="agendamento-observacao-box">
+                    <p className="agendamento-observacao-title">
+                      Observações:
+                    </p>
+
+                    <p className="agendamento-observacao-text">
+                      {agendamento.observacoes}
+                    </p>
+                  </div>
+                )}
+              </div>
+            ))}
+          </section>
+        </>
+      )}
     </section>
   );
 }
