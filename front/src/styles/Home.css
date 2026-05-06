@@ -1,19 +1,24 @@
 .home-section {
-    background-color: #ffffff;
-    border: 1px solid #d8d1c3;
-    padding: 30px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  }
-  
-  .home-title {
-    margin-top: 0;
-    font-size: 30px;
-    color: #3f352b;
-  }
-  
-  .home-text {
-    font-size: 17px;
-    color: #5f564c;
-    line-height: 1.6;
-    margin-bottom: 0;
-  }
+  width: 100%;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 32px;
+  background: #ffffff;
+  border: 1px solid #e4d4f5;
+  border-radius: 24px;
+  box-shadow: 0 18px 45px rgba(60, 38, 88, 0.12);
+}
+
+.home-title {
+  margin: 0 0 16px;
+  color: #4b2f63;
+  font-size: 30px;
+  font-weight: 800;
+}
+
+.home-text {
+  margin: 0 0 12px;
+  color: #5f5268;
+  font-size: 16px;
+  line-height: 1.6;
+}
