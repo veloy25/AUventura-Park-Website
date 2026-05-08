@@ -3,14 +3,15 @@
   "version": "1.0.0",
   "description": "",
   "type": "commonjs",
-  "main": "index.js",
   "scripts": {
     "start": "npm run dev",
-    "dev": "concurrently \"npm run dev:gateway\" \"npm run dev:user\" \"npm run dev:depoimentos\" \"npm run dev:agendamentos\"",
-    "dev:gateway": "nodemon services/api-gateway/index.js",
-    "dev:user": "nodemon services/user-service/index.js",
-    "dev:depoimentos": "nodemon services/depoimentos-service/index.js",
-    "dev:agendamentos": "nodemon services/agendamentos-service/index.js"
+    "dev": "concurrently \"npm run dev:gateway\" \"npm run dev:user\" \"npm run dev:depoimentos\" \"npm run dev:agendamentos\" \"npm run dev:pets\" \"npm run dev:daycare\"",
+    "dev:gateway": "nodemon --watch services/api-gateway services/api-gateway/index.js",
+    "dev:user": "nodemon --watch services/user-service services/user-service/index.js",
+    "dev:depoimentos": "nodemon --watch services/depoimentos-service services/depoimentos-service/index.js",
+    "dev:agendamentos": "nodemon --watch services/agendamentos-service services/agendamentos-service/index.js",
+    "dev:pets": "nodemon --watch services/pets-service services/pets-service/index.js",
+    "dev:daycare": "nodemon --watch services/daycare-service services/daycare-service/index.js"
   },
   "dependencies": {
     "axios": "^1.14.0",

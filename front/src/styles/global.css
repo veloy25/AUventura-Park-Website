@@ -1,101 +1,228 @@
-* {
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,700;0,9..144,900;1,9..144,400&family=DM+Sans:wght@400;500;600&display=swap');
+
+:root {
+  --cream: #fdf8f2;
+  --sand: #f0e8d8;
+  --bark: #c4956a;
+  --bark-dark: #9e6f45;
+  --forest: #2d4a3e;
+  --forest-light: #3d6454;
+  --forest-pale: #eaf2ee;
+  --soil: #1a1a1a;
+  --muted: #6b6560;
+  --white: #ffffff;
+  --accent: #e8622a;
+  --accent-light: #fef0e8;
+  --card-border: #e8dfd0;
+  --radius-sm: 8px;
+  --radius-md: 16px;
+  --radius-lg: 28px;
+  --radius-xl: 40px;
+  --shadow-sm: 0 2px 8px rgba(26,26,26,0.06);
+  --shadow-md: 0 8px 32px rgba(26,26,26,0.10);
+  --shadow-lg: 0 20px 60px rgba(26,26,26,0.13);
+}
+
+*, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
-html,
-body,
-#root {
-  min-height: 100%;
-  background-color: #ffffff;
-}
+html, body, #root { min-height: 100%; }
 
 body {
-  font-family: Arial, sans-serif;
-  background-color: #ffffff;
-  color: #3f352b;
+  font-family: 'DM Sans', sans-serif;
+  background-color: var(--cream);
+  color: var(--soil);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
 }
 
-.page {
-  min-height: 100vh;
-  background-color: #ffffff;
-}
+.page { min-height: 100vh; background-color: var(--cream); }
 
 .main {
-  max-width: 1000px;
+  max-width: 1100px;
   margin: 0 auto;
-  padding: 30px 20px 50px;
-  background-color: #ffffff;
+  padding: 48px 24px 80px;
 }
 
-/* Classes reutilizáveis */
+.display-title {
+  font-family: 'Fraunces', serif;
+  font-weight: 900;
+  line-height: 1.05;
+  color: var(--forest);
+}
+
+.section-heading {
+  font-family: 'Fraunces', serif;
+  font-weight: 700;
+  font-size: 28px;
+  color: var(--forest);
+  margin-bottom: 8px;
+}
 
 .page-title {
-  margin: 0 0 20px;
-  color: #4b2f63;
-  font-size: 30px;
-  font-weight: 800;
-}
-
-.section-card {
-  background-color: #ffffff;
-  border: 1px solid #e4d4f5;
-  border-radius: 24px;
-  padding: 25px;
-  box-shadow: 0 18px 45px rgba(60, 38, 88, 0.12);
+  font-family: 'Fraunces', serif;
+  font-weight: 700;
+  font-size: 32px;
+  color: var(--forest);
+  margin-bottom: 8px;
 }
 
 .section-title {
-  margin: 0 0 20px;
-  color: #4b2f63;
-  font-size: 24px;
-  font-weight: 800;
+  font-family: 'Fraunces', serif;
+  font-weight: 700;
+  font-size: 22px;
+  color: var(--forest);
+  margin-bottom: 16px;
 }
 
 .section-text {
-  margin: 8px 0;
-  color: #5f5268;
-  font-size: 16px;
-  line-height: 1.6;
+  font-size: 15px;
+  color: var(--muted);
+  line-height: 1.7;
+  margin: 6px 0;
+}
+
+.section-card {
+  background: var(--white);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-lg);
+  padding: 32px;
+  box-shadow: var(--shadow-md);
 }
 
 .primary-button {
-  background-color: #b39dce;
-  color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background-color: var(--forest);
+  color: var(--white);
   border: none;
-  border-radius: 999px;
-  padding: 12px 18px;
+  border-radius: var(--radius-xl);
+  padding: 14px 28px;
+  font-family: 'DM Sans', sans-serif;
   font-size: 15px;
-  font-weight: bold;
+  font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.15s, transform 0.15s;
+  transition: background-color 0.2s, transform 0.15s, box-shadow 0.2s;
+  box-shadow: 0 4px 16px rgba(45,74,62,0.25);
+  letter-spacing: 0.01em;
 }
 
 .primary-button:hover {
-  background-color: #9e87bb;
+  background-color: var(--forest-light);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(45,74,62,0.30);
+}
+
+.primary-button:active { transform: translateY(0); }
+
+.primary-button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.full-width-button { width: 100%; }
+
+.secondary-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background-color: transparent;
+  color: var(--forest);
+  border: 2px solid var(--forest);
+  border-radius: var(--radius-xl);
+  padding: 12px 26px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s, transform 0.15s;
+}
+
+.secondary-button:hover {
+  background-color: var(--forest-pale);
   transform: translateY(-1px);
 }
 
-.primary-button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 18px;
 }
 
-.full-width-button {
-  width: 100%;
+.form-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--forest);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
 }
+
+.form-input {
+  width: 100%;
+  padding: 13px 16px;
+  border: 1.5px solid var(--card-border);
+  border-radius: var(--radius-sm);
+  background: var(--cream);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  color: var(--soil);
+  transition: border-color 0.2s, box-shadow 0.2s;
+  outline: none;
+  appearance: none;
+}
+
+.form-input:focus {
+  border-color: var(--forest);
+  box-shadow: 0 0 0 3px rgba(45,74,62,0.10);
+  background: var(--white);
+}
+
+.form-input::placeholder { color: #b0a89a; }
+textarea.form-input { resize: vertical; min-height: 100px; }
 
 .form-error {
-  color: #c0392b;
+  background: #fde8e4;
+  border: 1px solid #f0b8ad;
+  border-radius: var(--radius-sm);
+  color: #b93a1e;
   font-size: 14px;
-  margin-bottom: 12px;
-  font-weight: 600;
+  font-weight: 500;
+  padding: 10px 14px;
+  margin-bottom: 16px;
 }
 
 .form-success {
-  color: #27ae60;
+  background: var(--forest-pale);
+  border: 1px solid #b8d9c8;
+  border-radius: var(--radius-sm);
+  color: var(--forest);
   font-size: 14px;
-  margin-bottom: 12px;
-  font-weight: 600;
+  font-weight: 500;
+  padding: 10px 14px;
+  margin-bottom: 16px;
+}
+
+.badge {
+  display: inline-block;
+  padding: 4px 12px;
+  background: var(--accent-light);
+  color: var(--accent);
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.badge-green {
+  background: var(--forest-pale);
+  color: var(--forest);
 }

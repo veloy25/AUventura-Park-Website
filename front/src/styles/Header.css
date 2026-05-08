@@ -1,14 +1,18 @@
 .header-area {
   width: 100%;
-  background-color: #ffffff;
-  border-bottom: 2px solid #b39dce;
-  box-shadow: 0 1px 6px rgba(100, 60, 150, 0.08);
+  background: var(--white);
+  border-bottom: 1px solid var(--card-border);
+  box-shadow: var(--shadow-sm);
+  position: sticky;
+  top: 0;
+  z-index: 200;
 }
 
 .header-inner {
-  max-width: 1000px;
+  max-width: 1100px;
   margin: 0 auto;
-  padding: 12px 20px;
+  padding: 0 24px;
+  height: 70px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -17,31 +21,35 @@
 .header-brand {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
   cursor: pointer;
+  text-decoration: none;
 }
 
 .header-logo-img {
-  width: 56px;
-  height: 56px;
+  width: 44px;
+  height: 44px;
   object-fit: contain;
   border-radius: 50%;
 }
 
 .logo {
-  font-size: 26px;
-  font-weight: bold;
-  color: #4b3b2a;
+  font-family: 'Fraunces', serif;
+  font-size: 22px;
+  font-weight: 900;
+  color: var(--forest);
   margin: 0;
   line-height: 1;
+  letter-spacing: -0.02em;
 }
 
 .logo-au {
-  color: #8a3a8a;
+  color: var(--bark);
 }
 
 .subtitle {
-  margin: 4px 0 0 0;
-  font-size: 12px;
-  color: #7a6855;
+  margin: 3px 0 0 0;
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: 0.03em;
 }
