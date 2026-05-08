@@ -1,0 +1,118 @@
+.mypet-page {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.mypet-welcome {
+  background: var(--forest);
+  border-radius: var(--radius-xl);
+  padding: 48px;
+  margin-bottom: 32px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.mypet-welcome::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 80% 30%, rgba(196,149,106,0.25) 0%, transparent 55%);
+  pointer-events: none;
+}
+
+.mypet-welcome-icon {
+  font-size: 64px;
+  line-height: 1;
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
+}
+
+.mypet-welcome-text {
+  position: relative;
+  z-index: 1;
+}
+
+.mypet-welcome-text h2 {
+  font-family: 'Fraunces', serif;
+  font-size: 28px;
+  font-weight: 900;
+  color: var(--white);
+  margin-bottom: 8px;
+}
+
+.mypet-welcome-text p {
+  color: rgba(255,255,255,0.75);
+  font-size: 14px;
+}
+
+.mypet-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.mypet-info-card {
+  background: var(--white);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  box-shadow: var(--shadow-sm);
+}
+
+.mypet-info-card .card-icon {
+  font-size: 28px;
+  margin-bottom: 10px;
+}
+
+.mypet-info-card h4 {
+  font-family: 'Fraunces', serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  margin-bottom: 4px;
+}
+
+.mypet-info-card p {
+  font-size: 16px;
+  color: var(--soil);
+  font-weight: 600;
+  word-break: break-all;
+}
+
+.mypet-status {
+  background: var(--forest-pale);
+  border: 1px solid #b8d9c8;
+  border-radius: var(--radius-lg);
+  padding: 24px 28px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.mypet-status-dot {
+  width: 12px;
+  height: 12px;
+  background: var(--forest);
+  border-radius: 50%;
+  flex-shrink: 0;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(45,74,62,0.4); }
+  50% { box-shadow: 0 0 0 6px rgba(45,74,62,0); }
+}
+
+.mypet-status p { font-size: 15px; color: var(--forest); font-weight: 500; }
+
+@media (max-width: 560px) {
+  .mypet-welcome { flex-direction: column; text-align: center; padding: 36px 24px; }
+  .mypet-cards { grid-template-columns: 1fr; }
+}

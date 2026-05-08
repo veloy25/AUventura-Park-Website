@@ -1,12 +1,133 @@
-.login-title {
-    text-align: center;
-  }
-  
-  .login-text {
-    text-align: center;
-    margin-bottom: 25px;
-  }
-  
-  .switch-auth-button {
-    background-color: #007bff;
-  }
+.login-page {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 0 0 40px;
+}
+
+.login-split {
+  width: 100%;
+  max-width: 960px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  background: var(--white);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--card-border);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  min-height: 520px;
+}
+
+.login-panel {
+  padding: 52px 44px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.login-deco {
+  background: var(--forest);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 48px;
+  position: relative;
+  overflow: hidden;
+}
+
+.login-deco::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 30% 70%, rgba(196,149,106,0.3) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.login-deco-paw {
+  font-size: 80px;
+  line-height: 1;
+  position: relative;
+  z-index: 1;
+}
+
+.login-deco-text {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+}
+
+.login-deco-text h3 {
+  font-family: 'Fraunces', serif;
+  font-size: 28px;
+  font-weight: 900;
+  color: var(--white);
+  line-height: 1.1;
+  margin-bottom: 10px;
+}
+
+.login-deco-text p {
+  color: rgba(255,255,255,0.7);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.login-eyebrow {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--bark);
+  margin-bottom: 8px;
+}
+
+.login-panel h2 {
+  font-family: 'Fraunces', serif;
+  font-size: 28px;
+  font-weight: 900;
+  color: var(--forest);
+  margin-bottom: 6px;
+}
+
+.login-description {
+  font-size: 14px;
+  color: var(--muted);
+  margin-bottom: 28px;
+  line-height: 1.5;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.login-switch {
+  margin-top: 20px;
+  text-align: center;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.login-switch-btn {
+  background: none;
+  border: none;
+  color: var(--forest);
+  font-weight: 700;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 0;
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  transition: text-decoration-color 0.15s;
+}
+
+.login-switch-btn:hover {
+  text-decoration-color: var(--forest);
+}
+
+@media (max-width: 640px) {
+  .login-split { grid-template-columns: 1fr; }
+  .login-deco { display: none; }
+  .login-panel { padding: 36px 28px; }
+}
