@@ -71,9 +71,9 @@ function Home({ setAbaAtiva, setAuthMode }) {
             <p className="service-desc">Banho, secagem e tosa profissional com produtos pet-friendly de qualidade.</p>
           </div>
           <div className="service-card">
-            <span className="service-emoji">🌙</span>
-            <div className="service-name">Hospedagem</div>
-            <p className="service-desc">Acomodações aconchegantes para seu pet quando você precisar viajar com tranquilidade.</p>
+            <span className="service-emoji">🎓</span>
+            <div className="service-name">Adestramento</div>
+            <p className="service-desc">Sessões individuais com adestrador certificado para desenvolver obediência e boas maneiras.</p>
           </div>
           <div className="service-card">
             <span className="service-emoji">🤸</span>
