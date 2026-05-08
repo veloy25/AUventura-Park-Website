@@ -54,7 +54,6 @@ function gerarDatasPlano(dataInicio, diasSemana, plano) {
 }
 
 async function contarPetsPorDia(data) {
-  // Busca agendamentos onde a data está no JSON de datas_geradas
   const [rows] = await pool.query(
     `SELECT COUNT(*) as total FROM daycare_agendamentos
      WHERE JSON_CONTAINS(datas_geradas, ?, '$') AND status != 'cancelado'`,
@@ -111,6 +110,11 @@ app.post("/agendar", authenticate, async (req, res) => {
     return res.status(400).json({ error: "petId e plano são obrigatórios." });
   }
 
+  // Garante que valor_total nunca seja null/undefined (evita erro de NOT NULL no banco)
+  const valorFinal = (valorTotal != null && !isNaN(Number(valorTotal)))
+    ? Number(valorTotal)
+    : 0;
+
   try {
     let datasGeradas = [];
     if (plano === "dayuse") {
@@ -143,7 +147,7 @@ app.post("/agendar", authenticate, async (req, res) => {
         dataAvulso || null,
         JSON.stringify(datasGeradas),
         observacoes || "",
-        valorTotal,
+        valorFinal,
       ]
     );
 
@@ -158,7 +162,7 @@ app.post("/agendar", authenticate, async (req, res) => {
       dataAvulso,
       datasGeradas,
       observacoes,
-      valorTotal,
+      valorTotal: valorFinal,
       status: "pendente",
       criado_em: new Date().toISOString(),
     };

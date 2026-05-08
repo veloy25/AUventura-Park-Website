@@ -72,6 +72,24 @@ const initializeDatabase = async () => {
     FOREIGN KEY (user_id) REFERENCES users(id)
   )`);
   console.log("Database table 'pets' is ready.");
+
+  await pool.query(`CREATE TABLE IF NOT EXISTS daycare_agendamentos (
+    id           INT AUTO_INCREMENT PRIMARY KEY,
+    user_id      INT NOT NULL,
+    pet_id       INT NOT NULL,
+    plano        VARCHAR(20) NOT NULL,
+    frequencia   VARCHAR(30),
+    dias_semana  JSON,
+    data_inicio  DATE,
+    data_avulso  DATE,
+    datas_geradas JSON NOT NULL,
+    valor_total  DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+    observacoes  TEXT,
+    status       VARCHAR(20) NOT NULL DEFAULT 'pendente',
+    criado_em    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id)
+  )`);
+  console.log("Database table 'daycare_agendamentos' is ready.");
 };
 
 module.exports = { pool, ensureDatabase, initializeDatabase };

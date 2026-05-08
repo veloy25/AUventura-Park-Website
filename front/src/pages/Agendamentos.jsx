@@ -39,12 +39,12 @@ const SERVICOS = [
     descricao: "Combine o banho completo com uma tosa feita por profissionais experientes. Deixamos seu pet impecável de ponta a ponta.",
   },
   {
-    id: "hospedagem",
-    label: "Hospedagem",
-    emoji: "🌙",
-    img: "/images/servicos/hospedagem.jpg",
-    resumo: "Acomodação confortável para quando você precisar viajar.",
-    descricao: "Nossa hospedagem oferece quartos privativos, caminhas confortáveis, alimentação monitorada e acompanhamento 24h.",
+    id: "adestramento",
+    label: "Adestramento",
+    emoji: "🎓",
+    img: "/images/servicos/adestramento.jpg",
+    resumo: "Sessões individuais com adestrador certificado para obediência e boas maneiras.",
+    descricao: "Trabalhamos comandos básicos e avançados com método positivo. Cada sessão é adaptada ao perfil do seu cão, respeitando seu ritmo e personalidade.",
   },
 ];
 
@@ -52,9 +52,9 @@ const SERVICOS = [
 // ─── Geração de slots ─────────────────────────────────────────────────────────
 function gerarSlots(servico) {
   const slots = [];
-  const intervalo = servico === "banho_tosa" ? 60 : 30;
+  const intervalo = (servico === "banho_tosa" || servico === "adestramento") ? 60 : 30;
   const fimH = 17;
-  const fimM = servico === "banho_tosa" ? 0 : 30;
+  const fimM = (servico === "banho_tosa" || servico === "adestramento") ? 0 : 30;
 
   let h = 8, m = 0;
   while (h < fimH || (h === fimH && m <= fimM)) {
@@ -66,7 +66,7 @@ function gerarSlots(servico) {
 }
 
 
-const SERVICOS_COM_SLOTS = ["banho", "tosa", "banho_tosa"];
+const SERVICOS_COM_SLOTS = ["banho", "tosa", "banho_tosa", "adestramento"];
 
 
 // ─── Raças / Vacinas ──────────────────────────────────────────────────────────
@@ -95,7 +95,7 @@ const PET_VAZIO = { nome: "", idade: "", peso: "", raca: "", vacinas: [] };
 
 const servicoLabel = {
   daycare: "Daycare 🏡", banho: "Banho 🛁", tosa: "Tosa ✂️",
-  banho_tosa: "Banho e Tosa 🛁✂️", hospedagem: "Hospedagem 🌙",
+  banho_tosa: "Banho e Tosa 🛁✂️", adestramento: "Adestramento 🎓",
 };
 
 
@@ -520,7 +520,7 @@ function Agendamentos({ isLogado, user, setAbaAtiva, servicoPendente, setServico
                 onChange={(e) => setNovoAgendamento((p) => ({ ...p, data: e.target.value, horario: "" }))} required />
             </div>
 
-            {/* Horário — TimePicker para banho/tosa/banho_tosa, time input para os demais */}
+            {/* Horário — TimePicker para banho/tosa/banho_tosa/adestramento, time input para os demais */}
             {usaSlots ? (
               <div className="form-group">
                 <label className="form-label">
