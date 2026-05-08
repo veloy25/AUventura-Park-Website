@@ -23,21 +23,20 @@ messageBus.subscribe("user:created", "agendamentos-service", (event) => {
 const authenticate = (req, res, next) => {
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    return res.status(401).json({ error: "Token de autenticaçao ausente." });
+    return res.status(401).json({ error: "Token de autenticação ausente." });
   }
-
   const token = authHeader.split(" ")[1];
   try {
     req.user = verifyToken(token);
     next();
   } catch (error) {
-    return res.status(401).json({ error: "Token invalido ou expirado." });
+    return res.status(401).json({ error: "Token inválido ou expirado." });
   }
 };
 
+// ── GET / — listar agendamentos do usuário ────────────────────────────────────
 app.get("/", authenticate, async (req, res) => {
   const userId = req.user.id;
-
   try {
     const [rows] = await pool.query(
       "SELECT id, user_id, nomeCachorro, servico, `data`, horario, observacoes, criado_em FROM agendamentos WHERE user_id = ? ORDER BY criado_em DESC",
@@ -50,6 +49,7 @@ app.get("/", authenticate, async (req, res) => {
   }
 });
 
+// ── POST / — criar agendamento ────────────────────────────────────────────────
 app.post("/", authenticate, async (req, res) => {
   const { nomeCachorro, servico, data, horario, observacoes } = req.body;
   const userId = req.user.id;
@@ -84,6 +84,28 @@ app.post("/", authenticate, async (req, res) => {
   }
 });
 
+// ── GET /horarios-ocupados — rota pública para o TimePicker ───────────────────
+app.get("/horarios-ocupados", async (req, res) => {
+  const { data, servico } = req.query;
+
+  if (!data || !servico) {
+    return res.status(400).json({ error: "data e servico são obrigatórios." });
+  }
+
+  try {
+    const [rows] = await pool.query(
+      "SELECT horario FROM agendamentos WHERE `data` = ? AND servico = ?",
+      [data, servico]
+    );
+    const ocupados = rows.map((r) => r.horario);
+    res.json(ocupados);
+  } catch (error) {
+    console.error("GET /horarios-ocupados error:", error);
+    res.status(500).json({ error: "Não foi possível buscar os horários ocupados." });
+  }
+});
+
+// ── 404 ───────────────────────────────────────────────────────────────────────
 app.use((req, res) => {
   res.status(404).json({ error: "Rota não encontrada." });
 });
