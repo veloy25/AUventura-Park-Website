@@ -7,12 +7,14 @@ import Login from "./pages/Login";
 import Depoimentos from "./pages/Depoimentos";
 import Agendamentos from "./pages/Agendamentos";
 import MyPet from "./pages/MyPet";
+import Daycare from "./pages/Daycare";
 
 function App() {
   const [abaAtiva, setAbaAtiva] = useState("home");
   const [isLogado, setIsLogado] = useState(false);
   const [user, setUser] = useState(null);
   const [servicoPendente, setServicoPendente] = useState(null);
+  const [daycareAtivo, setDaycareAtivo] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("authToken");
@@ -41,6 +43,7 @@ function App() {
     setUser(null);
     setIsLogado(false);
     setAbaAtiva("home");
+    setDaycareAtivo(false);
   };
 
   return (
@@ -69,13 +72,22 @@ function App() {
           <Depoimentos isLogado={isLogado} user={user} />
         )}
 
-        {abaAtiva === "agendamentos" && (
+        {abaAtiva === "agendamentos" && !daycareAtivo && (
           <Agendamentos
             isLogado={isLogado}
             user={user}
             setAbaAtiva={setAbaAtiva}
             servicoPendente={servicoPendente}
             setServicoPendente={setServicoPendente}
+            setDaycareAtivo={setDaycareAtivo}
+          />
+        )}
+
+        {abaAtiva === "agendamentos" && daycareAtivo && (
+          <Daycare
+            user={user}
+            onVoltar={() => setDaycareAtivo(false)}
+            onSuccess={() => setDaycareAtivo(false)}
           />
         )}
       </main>
