@@ -176,6 +176,44 @@ app.post("/agendar", authenticate, async (req, res) => {
   }
 });
 
+// PUT /agendar/:id — editar agendamento
+app.put("/agendar/:id", authenticate, async (req, res) => {
+  const { id } = req.params;
+  const userId = req.user.id;
+  const { frequencia, diasSemana, dataInicio, dataAvulso, observacoes } = req.body;
+
+  try {
+    const [existing] = await pool.query(
+      "SELECT * FROM daycare_agendamentos WHERE id = ? AND user_id = ?",
+      [id, userId]
+    );
+    if (!existing.length) return res.status(404).json({ error: "Agendamento não encontrado." });
+
+    await pool.query(
+      `UPDATE daycare_agendamentos SET frequencia=?, dias_semana=?, data_inicio=?, data_avulso=?, observacoes=? WHERE id=?`,
+      [frequencia || null, JSON.stringify(diasSemana || []), dataInicio || null, dataAvulso || null, observacoes || "", id]
+    );
+    res.json({ message: "Agendamento atualizado." });
+  } catch (error) {
+    res.status(500).json({ error: "Não foi possível atualizar." });
+  }
+});
+
+// DELETE /agendar/:id — cancelar agendamento
+app.delete("/agendar/:id", authenticate, async (req, res) => {
+  const { id } = req.params;
+  const userId = req.user.id;
+  try {
+    await pool.query(
+      "UPDATE daycare_agendamentos SET status='cancelado' WHERE id=? AND user_id=?",
+      [id, userId]
+    );
+    res.json({ message: "Agendamento cancelado." });
+  } catch (error) {
+    res.status(500).json({ error: "Não foi possível cancelar." });
+  }
+});
+
 // ── 404 ───────────────────────────────────────────────────────────────────────
 app.use((req, res) => {
   res.status(404).json({ error: "Rota não encontrada." });

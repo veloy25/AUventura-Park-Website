@@ -78,7 +78,7 @@ const RACAS = [
   "Jack Russell Terrier", "Labrador Retriever", "Lhasa Apso", "Malamute do Alasca",
   "Maltês", "Mastiff", "Pinscher Miniatura", "Pit Bull", "Pomerânia", "Poodle", "Pug",
   "Rottweiler", "Samoieda", "Schnauzer", "Shar Pei", "Shih Tzu", "Spitz Alemão",
-  "Vira-lata", "Weimaraner", "Yorkshire Terrier",
+  "Sem raça definida(SRD)", "Weimaraner", "Yorkshire Terrier",
 ];
 
 
@@ -175,7 +175,7 @@ function TimePicker({ slots, value, onChange, horariosOcupados = [], disabled = 
 
 
 // ─── Componente principal ─────────────────────────────────────────────────────
-function Agendamentos({ isLogado, user, setAbaAtiva, servicoPendente, setServicoPendente }) {
+function Agendamentos({ isLogado, user, setAbaAtiva, servicoPendente, setServicoPendente, setDaycareAtivo }) {
   const [tela, setTela] = useState("servicos");
   const [servicoSelecionado, setServicoSelecionado] = useState(null);
   const [pets, setPets] = useState([]);
@@ -277,12 +277,19 @@ function Agendamentos({ isLogado, user, setAbaAtiva, servicoPendente, setServico
   };
 
 
+  // ─── ÚNICA MUDANÇA: daycare redireciona para o componente próprio ─────────
   const handleAgendeJa = () => {
     if (!isLogado) {
       setServicoPendente(servicoSelecionado);
       setAbaAtiva("login");
       return;
     }
+
+    if (servicoSelecionado.id === "daycare") {
+      setDaycareAtivo(true);
+      return;
+    }
+
     setNovoAgendamento({ ...AGENDAMENTO_VAZIO, servico: servicoSelecionado.id });
     setTela("form");
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -520,7 +527,7 @@ function Agendamentos({ isLogado, user, setAbaAtiva, servicoPendente, setServico
                 onChange={(e) => setNovoAgendamento((p) => ({ ...p, data: e.target.value, horario: "" }))} required />
             </div>
 
-            {/* Horário — TimePicker para banho/tosa/banho_tosa/adestramento, time input para os demais */}
+            {/* Horário */}
             {usaSlots ? (
               <div className="form-group">
                 <label className="form-label">
