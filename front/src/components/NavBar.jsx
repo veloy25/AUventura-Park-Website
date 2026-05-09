@@ -54,6 +54,13 @@ function Navbar({ isLogado, abaAtiva, setAbaAtiva, handleLogout }) {
         Depoimentos
       </button>
 
+      <button
+        className={`${cls("contato")} nav-button-contato`}
+        onClick={() => setAbaAtiva("contato")}
+      >
+        Contato
+      </button>
+
       <div className="avatar-wrapper" ref={wrapperRef}>
         <button
           className={`avatar-btn${dropdownAberto ? " avatar-btn-active" : ""}`}

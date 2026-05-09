@@ -6,6 +6,7 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Depoimentos from "./pages/Depoimentos";
 import Agendamentos from "./pages/Agendamentos";
+import Contato from "./pages/Contato";
 import MyPet from "./pages/MyPet";
 import Daycare from "./pages/Daycare";
 
@@ -70,6 +71,10 @@ function App() {
 
         {abaAtiva === "depoimentos" && (
           <Depoimentos isLogado={isLogado} user={user} />
+        )}
+
+        {abaAtiva === "contato" && (
+          <Contato />
         )}
 
         {abaAtiva === "agendamentos" && !daycareAtivo && (

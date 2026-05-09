@@ -116,3 +116,40 @@
 .dropdown-item-sair:hover {
   background-color: var(--accent-light);
 }
+
+.nav-button-contato {
+  background-color: var(--forest-pale);
+  color: var(--forest);
+  font-weight: 700;
+  margin-left: 4px;
+}
+
+.nav-button-contato:hover {
+  background-color: var(--forest-pale);
+  color: var(--forest);
+  transform: translateY(-1px);
+}
+
+.nav-button-contato {
+  background-color: transparent;
+  color: var(--forest);
+  border: 1px solid rgba(45, 74, 62, 0.28);
+  font-weight: 700;
+  margin-left: 4px;
+  box-shadow: none;
+}
+
+.nav-button-contato:hover {
+  background-color: var(--forest-pale);
+  color: var(--forest);
+  border-color: rgba(45, 74, 62, 0.45);
+  transform: translateY(-1px);
+}
+
+/* Quando a aba Contato estiver realmente selecionada */
+.nav-button-contato.nav-button-active {
+  background-color: #3f6b59;
+  color: var(--white);
+  border-color: #3f6b59;
+  box-shadow: 0 4px 12px rgba(45, 74, 62, 0.16);
+}
