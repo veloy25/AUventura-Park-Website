@@ -9,6 +9,7 @@ import Agendamentos from "./pages/Agendamentos";
 import Contato from "./pages/Contato";
 import MyPet from "./pages/MyPet";
 import Daycare from "./pages/Daycare";
+import Notificacoes from "./pages/Notificacoes";
 
 function App() {
   const [abaAtiva, setAbaAtiva] = useState("home");
@@ -67,6 +68,10 @@ function App() {
 
         {abaAtiva === "mypet" && isLogado && (
           <MyPet user={user} />
+        )}
+
+        {abaAtiva === "notificacoes" && isLogado && (
+          <Notificacoes user={user} />
         )}
 
         {abaAtiva === "depoimentos" && (

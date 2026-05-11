@@ -153,3 +153,47 @@
   border-color: #3f6b59;
   box-shadow: 0 4px 12px rgba(45, 74, 62, 0.16);
 }
+
+.nav-notification-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: var(--radius-sm);
+  transition: background-color 0.15s;
+  position: relative;
+  margin-left: 8px;
+}
+
+.nav-notification-btn:hover {
+  background-color: var(--sand);
+}
+
+.notification-icon-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.notification-icon-wrapper svg {
+  color: var(--muted);
+  transition: color 0.15s;
+}
+
+.nav-notification-btn:hover .notification-icon-wrapper svg {
+  color: var(--forest);
+}
+
+.notification-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: #e74c3c;
+  color: white;
+  border-radius: 50%;
+  padding: 2px 6px;
+  font-size: 10px;
+  font-weight: 700;
+  min-width: 16px;
+  text-align: center;
+  border: 2px solid var(--white);
+}
