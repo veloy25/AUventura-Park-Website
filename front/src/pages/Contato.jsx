@@ -11,18 +11,47 @@ function Contato() {
   });
 
   const [enviado, setEnviado] = useState(false);
+  const [carregando, setCarregando] = useState(false);
+  const [erro, setErro] = useState("");
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
+  const { name, value } = e.target;
 
-    setForm((dadosAtuais) => ({
-      ...dadosAtuais,
-      [name]: value,
-    }));
-  };
+  setForm((dadosAtuais) => ({
+    ...dadosAtuais,
+    [name]: value,
+  }));
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  if (enviado) {
+    setEnviado(false);
+  }
+
+  if (erro) {
+    setErro("");
+  }
+};
+
+const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  setCarregando(true);
+  setEnviado(false);
+  setErro("");
+
+  try {
+    const response = await fetch("/api/contatos", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(form),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || "Não foi possível enviar a mensagem.");
+    }
 
     setEnviado(true);
 
@@ -33,7 +62,15 @@ function Contato() {
       assunto: "",
       mensagem: "",
     });
-  };
+  } catch (error) {
+    setErro(
+      error.message ||
+        "Não foi possível enviar a mensagem. Tente novamente mais tarde."
+    );
+  } finally {
+    setCarregando(false);
+  }
+};
 
   return (
     <div className="contato-page">
@@ -107,6 +144,12 @@ function Contato() {
           {enviado && (
             <div className="contato-sucesso">
               Mensagem enviada com sucesso! Em breve entraremos em contato.
+            </div>
+          )}
+
+          {erro && (
+            <div className="contato-erro">
+              {erro}
             </div>
           )}
 
@@ -188,8 +231,12 @@ function Contato() {
             />
           </div>
 
-          <button className="primary-button full-width-button" type="submit">
-            🐶 Enviar mensagem
+          <button
+            className="primary-button full-width-button"
+            type="submit"
+            disabled={carregando}
+          >
+            {carregando ? "Enviando..." : "🐶 Enviar mensagem"}
           </button>
         </form>
       </section>
