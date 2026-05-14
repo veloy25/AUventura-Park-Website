@@ -90,6 +90,18 @@ const initializeDatabase = async () => {
     FOREIGN KEY (user_id) REFERENCES users(id)
   )`);
   console.log("Database table 'daycare_agendamentos' is ready.");
+
+    await pool.query(`CREATE TABLE IF NOT EXISTS contatos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL,
+    email VARCHAR(180) NOT NULL,
+    telefone VARCHAR(30),
+    assunto VARCHAR(150) NOT NULL,
+    mensagem TEXT NOT NULL,
+    status VARCHAR(20) NOT NULL DEFAULT 'novo',
+    criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  )`);
+  console.log("Database table 'contatos' is ready.");
 };
 
 module.exports = { pool, ensureDatabase, initializeDatabase };
