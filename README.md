@@ -95,12 +95,12 @@ front/
 
 ## 👥 Equipe
 
-- Fernando Godoi Grinevicius
-- Gabriel Barrochelo
-- Igor Gava Rubinato
-- Jonas Fernando da Silva Eboli Machado
-- Matheus Antonio da Luz Cardoso
-- Vinícius Eloy Araujo
+- Fernando Godoi Grinevicius // 22.00832-2
+- Gabriel Barrochelo // 22.10193-4
+- Igor Gava Rubinato // 22.00094-0
+- Jonas Fernando da Silva Eboli Machado // 22.00910-8
+- Matheus Antonio da Luz Cardoso // 22.01059-9
+- Vinícius Eloy Araujo // 22.01026-2
 
 ## 💡 Sugestões de melhoria
 
