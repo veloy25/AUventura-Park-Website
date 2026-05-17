@@ -10,6 +10,7 @@ const USER_SERVICE_URL        = process.env.USER_SERVICE_URL        || "http://l
 const DEPOIMENTOS_SERVICE_URL = process.env.DEPOIMENTOS_SERVICE_URL || "http://localhost:3002";
 const SCHEDULING_SERVICE_URL  = process.env.SCHEDULING_SERVICE_URL  || "http://localhost:3003";
 const PETS_SERVICE_URL        = process.env.PETS_SERVICE_URL        || "http://localhost:3004";
+const CONTACT_SERVICE_URL     = process.env.CONTACT_SERVICE_URL     || "http://localhost:3006";
 
 app.use(cors());
 app.use(express.json());
@@ -171,6 +172,29 @@ app.post("/api/daycare/agendar", async (req, res) => {
   }
 });
 
+// ── Contato Service ───────────────────────────────────────────────────────────
+app.post("/api/contatos", async (req, res) => {
+  try {
+    const response = await axios.post(`${CONTACT_SERVICE_URL}/`, req.body);
+    res.status(response.status).json(response.data);
+  } catch (error) {
+    res.status(error.response?.status || 500).json(
+      error.response?.data || { error: "Contato service error" }
+    );
+  }
+});
+
+app.get("/api/contatos", async (req, res) => {
+  try {
+    const response = await axios.get(`${CONTACT_SERVICE_URL}/`);
+    res.status(response.status).json(response.data);
+  } catch (error) {
+    res.status(error.response?.status || 500).json(
+      error.response?.data || { error: "Contato service error" }
+    );
+  }
+});
+
 // 404 handler
 app.use((req, res) => {
   res.status(404).json({ error: "Rota não encontrada." });
@@ -183,6 +207,7 @@ app.listen(PORT, () => {
   console.log(`  Scheduling Service:  ${SCHEDULING_SERVICE_URL}`);
   console.log(`  Pets Service:        ${PETS_SERVICE_URL}`);
   console.log(`  Daycare Service:     ${DAYCARE_SERVICE_URL}`);
+  console.log(`  Contato Service:     ${CONTACT_SERVICE_URL}`);
 });
 
 module.exports = app;
