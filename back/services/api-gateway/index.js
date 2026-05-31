@@ -195,6 +195,44 @@ app.get("/api/contatos", async (req, res) => {
   }
 });
 
+const NOTIFICACOES_SERVICE_URL = process.env.NOTIFICACOES_SERVICE_URL || "http://localhost:3007";
+
+app.get("/api/notificacoes", async (req, res) => {
+  try {
+    const response = await axios.get(`${NOTIFICACOES_SERVICE_URL}/`, { headers: req.headers });
+    res.status(response.status).json(response.data);
+  } catch (error) {
+    res.status(error.response?.status || 500).json(error.response?.data || { error: "Notificações service error" });
+  }
+});
+
+app.get("/api/notificacoes/nao-lidas", async (req, res) => {
+  try {
+    const response = await axios.get(`${NOTIFICACOES_SERVICE_URL}/nao-lidas`, { headers: req.headers });
+    res.status(response.status).json(response.data);
+  } catch (error) {
+    res.status(error.response?.status || 500).json(error.response?.data || { error: "Notificações service error" });
+  }
+});
+
+app.patch("/api/notificacoes/:id/lida", async (req, res) => {
+  try {
+    const response = await axios.patch(`${NOTIFICACOES_SERVICE_URL}/${req.params.id}/lida`, {}, { headers: req.headers });
+    res.status(response.status).json(response.data);
+  } catch (error) {
+    res.status(error.response?.status || 500).json(error.response?.data || { error: "Notificações service error" });
+  }
+});
+
+app.delete("/api/notificacoes/:id", async (req, res) => {
+  try {
+    const response = await axios.delete(`${NOTIFICACOES_SERVICE_URL}/${req.params.id}`, { headers: req.headers });
+    res.status(response.status).json(response.data);
+  } catch (error) {
+    res.status(error.response?.status || 500).json(error.response?.data || { error: "Notificações service error" });
+  }
+});
+
 // 404 handler
 app.use((req, res) => {
   res.status(404).json({ error: "Rota não encontrada." });

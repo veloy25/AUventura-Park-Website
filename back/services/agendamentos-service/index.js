@@ -4,6 +4,8 @@ const cors = require("cors");
 const { pool, initializeDatabase } = require("../../shared/database");
 const { verifyToken } = require("../../shared/auth");
 const messageBus = require("../../shared/messagebus");
+const axios = require("axios");
+const NOTIFICACOES_SERVICE_URL = process.env.NOTIFICACOES_SERVICE_URL || "http://localhost:3007";
 
 const app = express();
 const PORT = process.env.SCHEDULING_SERVICE_PORT || 3003;
@@ -76,7 +78,13 @@ app.post("/", authenticate, async (req, res) => {
     };
 
     messageBus.publish("agendamento:created", appointment, "agendamentos-service");
-
+    axios.post(`${NOTIFICACOES_SERVICE_URL}/interno/criar`, {
+      user_id: userId,
+      titulo: "Agendamento confirmado!",
+      mensagem: `Seu agendamento de ${servico.trim()} para ${nomeCachorro.trim()} no dia ${data} às ${horario.trim()} foi confirmado.`,
+      tipo: "agendamento"
+    }).catch(err => console.error("[Agendamentos] Erro ao notificar:", err.message));
+    
     res.status(201).json(appointment);
   } catch (error) {
     console.error("POST / error:", error);

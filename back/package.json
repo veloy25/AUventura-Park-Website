@@ -5,14 +5,15 @@
   "type": "commonjs",
   "scripts": {
     "start": "npm run dev",
-    "dev": "concurrently \"npm run dev:gateway\" \"npm run dev:user\" \"npm run dev:depoimentos\" \"npm run dev:agendamentos\" \"npm run dev:pets\" \"npm run dev:daycare\" \"npm run dev:contato\"",
+    "dev": "concurrently \"npm run dev:gateway\" \"npm run dev:user\" \"npm run dev:depoimentos\" \"npm run dev:agendamentos\" \"npm run dev:pets\" \"npm run dev:daycare\" \"npm run dev:contato\" \"npm run dev:notificacoes\"",
     "dev:gateway": "nodemon --watch services/api-gateway services/api-gateway/index.js",
     "dev:user": "nodemon --watch services/user-service services/user-service/index.js",
     "dev:depoimentos": "nodemon --watch services/depoimentos-service services/depoimentos-service/index.js",
     "dev:agendamentos": "nodemon --watch services/agendamentos-service services/agendamentos-service/index.js",
     "dev:pets": "nodemon --watch services/pets-service services/pets-service/index.js",
     "dev:daycare": "nodemon --watch services/daycare-service services/daycare-service/index.js",
-    "dev:contato": "nodemon --watch services/contato-service services/contato-service/index.js"
+    "dev:contato": "nodemon --watch services/contato-service services/contato-service/index.js",
+    "dev:notificacoes": "nodemon --watch services/notificacoes-service services/notificacoes-service/index.js"
   },
   "dependencies": {
     "axios": "^1.14.0",

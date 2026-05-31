@@ -4,6 +4,8 @@ const cors = require("cors");
 const { pool, initializeDatabase } = require("../../shared/database");
 const { verifyToken } = require("../../shared/auth");
 const messageBus = require("../../shared/messagebus");
+const axios = require("axios");
+const NOTIFICACOES_SERVICE_URL = process.env.NOTIFICACOES_SERVICE_URL || "http://localhost:3007";
 
 const app = express();
 const PORT = process.env.DAYCARE_SERVICE_PORT || 3005;
@@ -168,6 +170,13 @@ app.post("/agendar", authenticate, async (req, res) => {
     };
 
     messageBus.publish("daycare:created", agendamento, "daycare-service");
+
+    axios.post(`${NOTIFICACOES_SERVICE_URL}/interno/criar`, {
+      user_id: userId,
+      titulo: "Daycare confirmado!",
+      mensagem: `Sua vaga no Daycare foi confirmada! Plano: ${plano}.`,
+      tipo: "daycare"
+    }).catch(err => console.error("[Daycare] Erro ao notificar:", err.message));
 
     res.status(201).json(agendamento);
   } catch (error) {

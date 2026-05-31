@@ -4,6 +4,8 @@ const bcrypt = require("bcryptjs");
 const { pool, initializeDatabase } = require("../../shared/database");
 const { generateToken } = require("../../shared/auth");
 const messageBus = require("../../shared/messagebus");
+const axios = require("axios");
+const NOTIFICACOES_SERVICE_URL = process.env.NOTIFICACOES_SERVICE_URL || "http://localhost:3007";
 
 const app = express();
 const PORT = process.env.USER_SERVICE_PORT || 3001;
@@ -50,6 +52,13 @@ app.post("/signup", async (req, res) => {
 
     // Publish user created event
     messageBus.publish("user:created", { id: result.insertId, nome: nome.trim(), email: normalizedEmail }, "user-service");
+
+    axios.post(`${NOTIFICACOES_SERVICE_URL}/interno/criar`, {
+      user_id: result.insertId,
+      titulo: "Bem-vindo à AUventura Park! 🐾",
+      mensagem: `Olá, ${nome}! Sua conta foi criada com sucesso. Agende seu primeiro serviço!`,
+      tipo: "geral"
+    }).catch(err => console.error("[User] Erro ao notificar:", err.message));
 
     res.status(201).json({ id: result.insertId, nome: nome.trim(), email: normalizedEmail });
   } catch (error) {

@@ -102,6 +102,18 @@ const initializeDatabase = async () => {
     criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
   )`);
   console.log("Database table 'contatos' is ready.");
+
+  await pool.query(`CREATE TABLE IF NOT EXISTS notificacoes (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  titulo VARCHAR(150) NOT NULL,
+  mensagem TEXT NOT NULL,
+  tipo VARCHAR(50) NOT NULL DEFAULT 'geral',
+  lida TINYINT(1) NOT NULL DEFAULT 0,
+  criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+  )`);
+  console.log("Database table 'notificacoes' is ready.");
 };
 
 module.exports = { pool, ensureDatabase, initializeDatabase };

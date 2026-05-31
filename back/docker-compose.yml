@@ -92,6 +92,26 @@ services:
     networks:
       - microservices
 
+  notificacoes-service:
+    build:
+      context: ./services/notificacoes-service
+    container_name: notificacoes-service
+    ports:
+      - "3007:3007"
+    environment:
+      NOTIFICACOES_SERVICE_PORT: 3007
+      DB_HOST: mysql
+      DB_USER: root
+      DB_PASSWORD: root
+      DB_DATABASE: auventura
+      DB_PORT: 3306
+      JWT_SECRET: super_secret_login_key
+      JWT_EXPIRATION: 2h
+    depends_on:
+      - mysql
+    networks:
+      - microservices
+
 volumes:
   mysql-data:
 
