@@ -217,7 +217,11 @@ app.get("/api/notificacoes/nao-lidas", async (req, res) => {
 
 app.patch("/api/notificacoes/:id/lida", async (req, res) => {
   try {
-    const response = await axios.patch(`${NOTIFICACOES_SERVICE_URL}/${req.params.id}/lida`, {}, { headers: req.headers });
+    const response = await axios.patch(
+      `${NOTIFICACOES_SERVICE_URL}/${req.params.id}/lida`,
+      {},
+      { headers: { Authorization: req.headers.authorization } }  // ← só repassa o Authorization
+    );
     res.status(response.status).json(response.data);
   } catch (error) {
     res.status(error.response?.status || 500).json(error.response?.data || { error: "Notificações service error" });
@@ -226,7 +230,10 @@ app.patch("/api/notificacoes/:id/lida", async (req, res) => {
 
 app.delete("/api/notificacoes/:id", async (req, res) => {
   try {
-    const response = await axios.delete(`${NOTIFICACOES_SERVICE_URL}/${req.params.id}`, { headers: req.headers });
+    const response = await axios.delete(
+      `${NOTIFICACOES_SERVICE_URL}/${req.params.id}`,
+      { headers: { Authorization: req.headers.authorization } }  // ← só repassa o Authorization
+    );
     res.status(response.status).json(response.data);
   } catch (error) {
     res.status(error.response?.status || 500).json(error.response?.data || { error: "Notificações service error" });
