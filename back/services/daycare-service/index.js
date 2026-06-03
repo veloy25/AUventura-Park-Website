@@ -3,14 +3,13 @@ const express = require("express");
 const cors = require("cors");
 const { pool, initializeDatabase } = require("../../shared/database");
 const { verifyToken } = require("../../shared/auth");
-const messageBus = require("../../shared/messagebus");
 const axios = require("axios");
-const NOTIFICACOES_SERVICE_URL = process.env.NOTIFICACOES_SERVICE_URL || "http://localhost:3007";
+
+const BARRAMENTO_URL = process.env.BARRAMENTO_URL || "http://localhost:10000";
 
 const app = express();
 const PORT = process.env.DAYCARE_SERVICE_PORT || 3005;
 
-// ─── Configurações — para alterar o limite, mude só aqui ─────────────────────
 const MAX_PETS_DIA = 10;
 
 app.use(cors());
@@ -34,8 +33,6 @@ const authenticate = (req, res, next) => {
     return res.status(401).json({ error: "Token inválido ou expirado." });
   }
 };
-
-// ── Helpers ───────────────────────────────────────────────────────────────────
 
 function gerarDatasPlano(dataInicio, diasSemana, plano) {
   const meses = { mensal: 1, trimestral: 3, semestral: 6, anual: 12 };
@@ -74,7 +71,6 @@ async function verificarVagas(datasGeradas) {
   return { disponivel: true };
 }
 
-// ── GET /verificar-day-teste/:petId ──────────────────────────────────────────
 app.get("/verificar-day-teste/:petId", authenticate, async (req, res) => {
   try {
     const [rows] = await pool.query(
@@ -90,7 +86,6 @@ app.get("/verificar-day-teste/:petId", authenticate, async (req, res) => {
   }
 });
 
-// ── GET /vagas?data=YYYY-MM-DD ────────────────────────────────────────────────
 app.get("/vagas", authenticate, async (req, res) => {
   const { data } = req.query;
   if (!data) return res.status(400).json({ error: "Data obrigatória." });
@@ -103,7 +98,6 @@ app.get("/vagas", authenticate, async (req, res) => {
   }
 });
 
-// ── POST /agendar ─────────────────────────────────────────────────────────────
 app.post("/agendar", authenticate, async (req, res) => {
   const { petId, plano, frequencia, diasSemana, dataInicio, dataAvulso, observacoes, valorTotal } = req.body;
   const userId = req.user.id;
@@ -112,10 +106,7 @@ app.post("/agendar", authenticate, async (req, res) => {
     return res.status(400).json({ error: "petId e plano são obrigatórios." });
   }
 
-  // Garante que valor_total nunca seja null/undefined (evita erro de NOT NULL no banco)
-  const valorFinal = (valorTotal != null && !isNaN(Number(valorTotal)))
-    ? Number(valorTotal)
-    : 0;
+  const valorFinal = (valorTotal != null && !isNaN(Number(valorTotal))) ? Number(valorTotal) : 0;
 
   try {
     let datasGeradas = [];
@@ -140,43 +131,25 @@ app.post("/agendar", authenticate, async (req, res) => {
         (user_id, pet_id, plano, frequencia, dias_semana, data_inicio, data_avulso, datas_geradas, observacoes, valor_total, status)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pendente')`,
       [
-        userId,
-        petId,
-        plano,
-        frequencia || null,
-        JSON.stringify(diasSemana || []),
-        dataInicio || null,
-        dataAvulso || null,
-        JSON.stringify(datasGeradas),
-        observacoes || "",
-        valorFinal,
+        userId, petId, plano, frequencia || null,
+        JSON.stringify(diasSemana || []), dataInicio || null,
+        dataAvulso || null, JSON.stringify(datasGeradas),
+        observacoes || "", valorFinal,
       ]
     );
 
     const agendamento = {
-      id: result.insertId,
-      userId,
-      petId,
-      plano,
-      frequencia,
-      diasSemana,
-      dataInicio,
-      dataAvulso,
-      datasGeradas,
-      observacoes,
-      valorTotal: valorFinal,
-      status: "pendente",
+      id: result.insertId, userId, petId, plano, frequencia,
+      diasSemana, dataInicio, dataAvulso, datasGeradas,
+      observacoes, valorTotal: valorFinal, status: "pendente",
       criado_em: new Date().toISOString(),
     };
 
-    messageBus.publish("daycare:created", agendamento, "daycare-service");
-
-    axios.post(`${NOTIFICACOES_SERVICE_URL}/interno/criar`, {
-      user_id: userId,
-      titulo: "Daycare confirmado!",
-      mensagem: `Sua vaga no Daycare foi confirmada! Plano: ${plano}.`,
-      tipo: "daycare"
-    }).catch(err => console.error("[Daycare] Erro ao notificar:", err.message));
+    // Publica evento no barramento
+    axios.post(`${BARRAMENTO_URL}/eventos`, {
+      tipo: "daycare:created",
+      dados: agendamento
+    }).catch(err => console.error("[Daycare] Erro ao publicar no barramento:", err.message));
 
     res.status(201).json(agendamento);
   } catch (error) {
@@ -185,7 +158,6 @@ app.post("/agendar", authenticate, async (req, res) => {
   }
 });
 
-// PUT /agendar/:id — editar agendamento
 app.put("/agendar/:id", authenticate, async (req, res) => {
   const { id } = req.params;
   const userId = req.user.id;
@@ -208,7 +180,6 @@ app.put("/agendar/:id", authenticate, async (req, res) => {
   }
 });
 
-// DELETE /agendar/:id — cancelar agendamento
 app.delete("/agendar/:id", authenticate, async (req, res) => {
   const { id } = req.params;
   const userId = req.user.id;
@@ -223,11 +194,16 @@ app.delete("/agendar/:id", authenticate, async (req, res) => {
   }
 });
 
-// ── 404 ───────────────────────────────────────────────────────────────────────
 app.use((req, res) => {
   res.status(404).json({ error: "Rota não encontrada." });
 });
 
 app.listen(PORT, () => {
   console.log(`[Daycare Service] listening on port ${PORT}`);
+});
+
+app.post("/eventos", async (req, res) => {
+  const { tipo, dados } = req.body;
+  console.log(`[Daycare Service] Evento recebido: ${tipo}`, dados);
+  res.status(200).json({ message: "Evento recebido." });
 });
