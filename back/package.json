@@ -5,7 +5,8 @@
   "type": "commonjs",
   "scripts": {
     "start": "npm run dev",
-    "dev": "concurrently \"npm run dev:gateway\" \"npm run dev:user\" \"npm run dev:depoimentos\" \"npm run dev:agendamentos\" \"npm run dev:pets\" \"npm run dev:daycare\" \"npm run dev:contato\" \"npm run dev:notificacoes\"",
+    "dev": "concurrently \"npm run dev:barramento\" \"npm run dev:gateway\" \"npm run dev:user\" \"npm run dev:depoimentos\" \"npm run dev:agendamentos\" \"npm run dev:pets\" \"npm run dev:daycare\" \"npm run dev:contato\" \"npm run dev:notificacoes\"",
+    "dev:barramento": "nodemon --watch services/barramento-service services/barramento-service/index.js",
     "dev:gateway": "nodemon --watch services/api-gateway services/api-gateway/index.js",
     "dev:user": "nodemon --watch services/user-service services/user-service/index.js",
     "dev:depoimentos": "nodemon --watch services/depoimentos-service services/depoimentos-service/index.js",

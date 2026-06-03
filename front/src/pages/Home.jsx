@@ -98,10 +98,11 @@ function Home({ setAbaAtiva, setAuthMode }) {
             </ul>
           </div>
           <div className="why-visual">
-            <div className="why-visual-inner">
-              <span className="why-big-paw">🐾</span>
-              <p className="why-tagline">"Cuidado com amor"</p>
-            </div>
+            <img
+              src="/why-image.jpg"
+              alt="Cuidado com amor na AUventura Park"
+              className="why-img"
+            />
           </div>
         </div>
       </section>

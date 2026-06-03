@@ -1,12 +1,13 @@
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
+const axios = require("axios");
 const { pool, initializeDatabase } = require("../../shared/database");
 const { verifyToken } = require("../../shared/auth");
-const messageBus = require("../../shared/messagebus");
 
 const app = express();
 const PORT = process.env.PETS_SERVICE_PORT || 3004;
+const BARRAMENTO_URL = process.env.BARRAMENTO_URL || "http://localhost:10000";
 
 app.use(cors());
 app.use(express.json());
@@ -19,18 +20,25 @@ initializeDatabase().catch((error) => {
 const authenticate = (req, res, next) => {
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    return res.status(401).json({ error: "Token de autenticação ausente." });
+    return res.status(401).json({ error: "Token de autenticacao ausente." });
   }
   const token = authHeader.split(" ")[1];
   try {
     req.user = verifyToken(token);
     next();
   } catch (error) {
-    return res.status(401).json({ error: "Token inválido ou expirado." });
+    return res.status(401).json({ error: "Token invalido ou expirado." });
   }
 };
 
-// GET / — lista os pets do usuário autenticado
+// Recebe eventos do barramento
+app.post("/eventos", (req, res) => {
+  const { tipo, dados } = req.body;
+  console.log(`[Pets Service] Evento recebido: ${tipo}`, dados);
+  res.status(200).json({ message: "Evento processado." });
+});
+
+// GET / - Lista os pets do usuario autenticado
 app.get("/", authenticate, async (req, res) => {
   const userId = req.user.id;
   try {
@@ -38,7 +46,6 @@ app.get("/", authenticate, async (req, res) => {
       "SELECT id, user_id, nome, idade, peso, raca, vacinas, criado_em FROM pets WHERE user_id = ? ORDER BY criado_em ASC",
       [userId]
     );
-    // Converte vacinas de string CSV para array
     const pets = rows.map((p) => ({
       ...p,
       vacinas: p.vacinas ? p.vacinas.split(",").filter(Boolean) : [],
@@ -46,17 +53,17 @@ app.get("/", authenticate, async (req, res) => {
     res.json(pets);
   } catch (error) {
     console.error("GET / error:", error);
-    res.status(500).json({ error: "Não foi possível buscar os pets." });
+    res.status(500).json({ error: "Nao foi possivel buscar os pets." });
   }
 });
 
-// POST / — cadastra um novo pet
+// POST / - Cadastra um novo pet
 app.post("/", authenticate, async (req, res) => {
   const { nome, idade, peso, raca, vacinas } = req.body;
   const userId = req.user.id;
 
   if (!nome || !idade || !peso || !raca) {
-    return res.status(400).json({ error: "Todos os campos obrigatórios devem ser preenchidos." });
+    return res.status(400).json({ error: "Todos os campos obrigatorios devem ser preenchidos." });
   }
 
   const vacinasStr = Array.isArray(vacinas) ? vacinas.join(",") : (vacinas || "");
@@ -68,26 +75,26 @@ app.post("/", authenticate, async (req, res) => {
     );
 
     const pet = {
-      id: result.insertId,
-      user_id: userId,
-      nome: nome.trim(),
-      idade: parseInt(idade),
-      peso: parseFloat(peso),
-      raca: raca.trim(),
+      id: result.insertId, user_id: userId, nome: nome.trim(),
+      idade: parseInt(idade), peso: parseFloat(peso), raca: raca.trim(),
       vacinas: Array.isArray(vacinas) ? vacinas : [],
       criado_em: new Date().toISOString(),
     };
 
-    messageBus.publish("pet:created", pet, "pets-service");
+    // Publica evento no barramento
+    axios.post(`${BARRAMENTO_URL}/eventos`, {
+      tipo: "pet:created",
+      dados: pet
+    }).catch(err => console.error("[Pets] Erro ao publicar no barramento:", err.message));
 
     res.status(201).json(pet);
   } catch (error) {
     console.error("POST / error:", error);
-    res.status(500).json({ error: "Não foi possível cadastrar o pet." });
+    res.status(500).json({ error: "Nao foi possivel cadastrar o pet." });
   }
 });
 
-// DELETE /:id — remove um pet do usuário
+// DELETE /:id - Remove um pet do usuario
 app.delete("/:id", authenticate, async (req, res) => {
   const userId = req.user.id;
   const petId = req.params.id;
@@ -98,17 +105,17 @@ app.delete("/:id", authenticate, async (req, res) => {
       [petId, userId]
     );
     if (result.affectedRows === 0) {
-      return res.status(404).json({ error: "Pet não encontrado." });
+      return res.status(404).json({ error: "Pet nao encontrado." });
     }
     res.json({ message: "Pet removido com sucesso." });
   } catch (error) {
     console.error("DELETE /:id error:", error);
-    res.status(500).json({ error: "Não foi possível remover o pet." });
+    res.status(500).json({ error: "Nao foi possivel remover o pet." });
   }
 });
 
 app.use((req, res) => {
-  res.status(404).json({ error: "Rota não encontrada." });
+  res.status(404).json({ error: "Rota nao encontrada." });
 });
 
 app.listen(PORT, () => {
