@@ -1,6 +1,6 @@
 import "../styles/Home.css";
 
-function Home({ setAbaAtiva, setAuthMode }) {
+function Home({ setAbaAtiva}) {
   const handleAgendar = () => setAbaAtiva("agendamentos");
   const handleDepoimentos = () => setAbaAtiva("depoimentos");
 
