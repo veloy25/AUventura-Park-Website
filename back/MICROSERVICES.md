@@ -1,196 +1,153 @@
-# Microservices Architecture Guide
+# Guia de Arquitetura de Microsserviços
 
-## Overview
+## Visão Geral
 
-This backend is organized as a microservices architecture with the following components:
+O backend está organizado em uma arquitetura de microsserviços com os seguintes componentes:
 
-- **API Gateway** (Port 3000) - Main entry point, routes requests to services
-- **User Service** (Port 3001) - Authentication & user management
-- **Testimonials Service** (Port 3002) - Testimonials management
-- **Scheduling Service** (Port 3003) - Appointments management
-- **Shared Modules** - Database, authentication, message bus
-- **Message Bus** - Event-driven communication between services
+- **API Gateway** (Porta 3000) — Ponto de entrada principal, roteia as requisições HTTP para os serviços.
+- **User Service** — Autenticação e gerenciamento de usuários.
+- **Depoimentos Service** — Gerenciamento de depoimentos e comentários.
+- **Agendamentos Service** — Gerenciamento de agendamentos e consultas de serviços.
+- **Contato Service** — Processamento do formulário de contato.
+- **Daycare Service** — Operações relacionadas à creche.
+- **Notificações Service** — Processamento de notificações baseado em eventos.
+- **Barramento Service** — Barramento de eventos manual para comunicação entre serviços.
+- **Módulos Compartilhados** — Utilitários comuns, como conexão com banco de dados e autenticação.
 
-## Project Structure
+## Estrutura do Projeto
 
-```
+```text
 back/
+├── MICROSERVICES.md
+├── nodemon.json
+├── package.json
+├── schema.sql
 ├── services/
-│   ├── api-gateway/              # API Gateway service
-│   │   ├── index.js
-│   │   └── package.json
-│   ├── user-service/             # User authentication service
-│   │   ├── index.js
-│   │   └── package.json
-│   ├── testimonials-service/     # Testimonials service
-│   │   ├── index.js
-│   │   └── package.json
-│   └── agendamentos-service/     # Scheduling service
-│       ├── index.js
-│       ├── package.json
-│       └── schema.sql
-├── shared/                       # Shared utilities
-│   ├── messagebus.js            # Event bus for inter-service communication
-│   ├── database.js              # Database connection pool
-│   └── auth.js                  # JWT authentication utilities
-├── docker-compose.yml           # Docker composition for local development
-├── .env.example                 # Environment variables template
-├── package.json                 # Root package (optional)
-└── README.md                    # This file
+│   ├── api-gateway/
+│   ├── agendamentos-service/
+│   ├── barramento-service/
+│   ├── contato-service/
+│   ├── daycare-service/
+│   ├── depoimentos-service/
+│   ├── notificacoes-service/
+│   └── user-service/
+└── shared/
 ```
 
-## Running Locally
+## Executando Localmente
 
-### Prerequisites
+### Pré-requisitos
 
-- Node.js 16+
-- MySQL 8.0+
-- npm or yarn
+- Node.js 18+
+- MySQL 8+
+- npm
 
-### Setup Steps
+### Configuração
 
-1. **Copy environment file:**
-```bash
-cp .env.example .env
-```
-
-2. **Install dependencies for each service:**
+1. Instale as dependências do backend:
 
 ```bash
-# API Gateway
-cd services/api-gateway
+cd back
 npm install
-cd ../..
-
-# User Service
-cd services/user-service
-npm install
-cd ../..
-
-# Testimonials Service
-cd services/testimonials-service
-npm install
-cd ../..
-
-# Scheduling Service
-cd services/agendamentos-service
-npm install
-cd ../..
 ```
 
-3. **Start all services (in separate terminals):**
+2. Configure o arquivo `.env` com as credenciais do banco de dados, segredo JWT e portas dos serviços.
+
+3. Inicie todos os microsserviços com um único comando:
 
 ```bash
-# Terminal 1: API Gateway
-cd services/api-gateway
-npm start
-
-# Terminal 2: User Service
-cd services/user-service
-npm start
-
-# Terminal 3: Testimonials Service
-cd services/testimonials-service
-npm start
-
-# Terminal 4: Scheduling Service
-cd services/agendamentos-service
-npm start
+npm run dev
 ```
 
-The API Gateway will be available at `http://localhost:3000`
+O projeto utiliza o pacote `concurrently` para iniciar todos os microsserviços em paralelo a partir de um único script, simplificando o ambiente de desenvolvimento local.
 
-### Using Docker Compose
+### Inicialização manual (alternativa)
+
+Caso necessário, cada serviço pode ser iniciado individualmente em um terminal separado:
 
 ```bash
-docker-compose up --build
+cd back/services/api-gateway && npm run dev
+cd back/services/user-service && npm run dev
+cd back/services/depoimentos-service && npm run dev
+cd back/services/agendamentos-service && npm run dev
+cd back/services/contato-service && npm run dev
+cd back/services/daycare-service && npm run dev
+cd back/services/notificacoes-service && npm run dev
+cd back/services/barramento-service && npm run dev
 ```
 
-This will start:
-- MySQL database (port 3306)
-- API Gateway (port 3000)
-- User Service (port 3001)
-- Testimonials Service (port 3002)
-- Scheduling Service (port 3003)
+## Responsabilidades de Cada Serviço
 
-## API Endpoints
+### API Gateway
+Recebe as requisições dos clientes (frontend) e as encaminha para o microsserviço correspondente via HTTP.
 
-All endpoints are accessed through the API Gateway at `http://localhost:3000`
+### User Service
+Gerencia cadastro, login, autenticação com JWT e operações relacionadas ao usuário.
 
-### User Service Endpoints
+### Depoimentos Service
+Armazena e recupera os depoimentos publicados pelos usuários da plataforma.
 
-- `POST /api/signup` - Register a new user
-- `POST /api/login` - Login and receive JWT token
-- `GET /api/me` - Get current user profile (requires Authorization header)
+### Agendamentos Service
+Gerencia a criação e consulta de agendamentos de serviços para os pets.
 
-### Testimonials Service Endpoints
+### Contato Service
+Recebe e processa as mensagens enviadas pelo formulário de contato do site.
 
-- `GET /api/depoimentos` - Get all testimonials
-- `POST /api/depoimentos` - Create a new testimonial
-- `GET /api/depoimentos/:id` - Get a specific testimonial
+### Daycare Service
+Contém as regras de negócio e operações relacionadas à estadia dos pets na creche.
 
-### Scheduling Service Endpoints
+### Notificações Service
+Consome eventos do barramento e processa o envio de notificações aos usuários.
 
-- `GET /api/agendamentos` - Get current user appointments
-- `POST /api/agendamentos` - Create a new appointment
+### Barramento Service
+Recebe eventos via `POST /eventos` e os encaminha para os serviços assinantes por meio de requisições HTTP. O barramento foi implementado manualmente com Express e Axios, sem o uso de brokers externos como RabbitMQ ou Kafka.
 
-## Message Bus Events
+## Barramento de Eventos
 
-The services communicate through the Message Bus using events:
+O barramento de eventos foi implementado de forma manual no `barramento-service`, seguindo a proposta da disciplina.
 
-### User Service Events
-- **user:created** - Published when a new user is created
-- **user:logged-in** - Published when a user logs in
+Tipos de eventos atualmente suportados:
 
-### Testimonials Service Events
-- **testimonial:created** - Published when a new testimonial is created
+- `user:created` — publicado quando um novo usuário é criado.
+- `agendamento:created` — publicado quando um agendamento é realizado.
+- `daycare:created` — publicado quando uma entrada na creche é registrada.
 
-### Example Usage in Services
+Cada evento é recebido pelo barramento e repassado via HTTP para os serviços assinantes cadastrados.
 
-```javascript
-// Subscribe to events
-messageBus.subscribe("user:created", "service-name", (event) => {
-  console.log("New user created:", event.data);
-});
+## Endpoints da API
 
-// Publish events
-messageBus.publish("user:created", userData, "user-service");
-```
+Todos os acessos do frontend são feitos pelo API Gateway. Exemplos de rotas disponíveis:
 
-## Adding New Services
+### Usuários
+- `POST /api/signup` — Cadastro de novo usuário
+- `POST /api/login` — Login e geração de token JWT
+- `GET /api/me` — Retorna o perfil do usuário autenticado
 
-To add a new microservice:
+### Depoimentos
+- `GET /api/depoimentos` — Lista todos os depoimentos
+- `POST /api/depoimentos` — Cria um novo depoimento
+- `GET /api/depoimentos/:id` — Retorna um depoimento específico
 
-1. Create a new directory under `services/`
-2. Create `index.js` with Express app
-3. Create `package.json` with dependencies
-4. Add routes to the API Gateway to forward requests
-5. Subscribe to relevant events in `messagebus.js`
-6. Add service to `docker-compose.yml`
+### Agendamentos
+- `GET /api/agendamentos` — Lista os agendamentos do usuário autenticado
+- `POST /api/agendamentos` — Cria um novo agendamento
 
-## Environment Variables
+Rotas adicionais podem existir para contato, daycare, pets e notificações, conforme implementado em cada serviço.
 
-See `.env.example` for all available configuration options.
+## Variáveis de Ambiente
 
-Key variables:
-- `PORT` / `*_SERVICE_PORT` - Service ports
-- `DB_*` - Database connection settings
-- `JWT_SECRET` - Secret key for JWT tokens
-- `JWT_EXPIRATION` - Token expiration time
-- `*_SERVICE_URL` - Service URLs for the API Gateway
+As variáveis de ambiente devem ser configuradas em um arquivo `.env` na raiz do `back/`. Principais variáveis:
 
-## Development Tips
+- `PORT` / `*_SERVICE_PORT` — Portas de cada serviço
+- `DB_HOST`, `DB_USER`, `DB_PASSWORD`, `DB_NAME` — Conexão com MySQL
+- `JWT_SECRET` — Chave secreta para geração de tokens
+- `JWT_EXPIRATION` — Tempo de expiração do token
+- `*_SERVICE_URL` — URLs dos serviços usadas pelo API Gateway
+- `BARRAMENTO_PORT` — Porta do barramento de eventos
 
-1. **Use nodemon** - Services auto-reload on file changes (already configured)
-2. **Check service health** - Visit `http://localhost:3000/health`
-3. **Debug with logs** - All services log to console with service names in brackets
-4. **Separate concerns** - Keep business logic in services, routing in gateway
+## Boas Práticas de Desenvolvimento
 
-## Scaling Considerations
-
-Future improvements:
-- Use RabbitMQ or Redis for message bus (instead of in-memory EventEmitter)
-- Add service discovery mechanism
-- Implement API Gateway authentication/authorization
-- Add request/response logging middleware
-- Implement circuit breaker pattern for service calls
+- Utilize `npm run dev` para desenvolvimento, pois os serviços reiniciam automaticamente via nodemon.
+- Mantenha cada serviço responsável por um único domínio do sistema.
+- Todo acesso externo deve passar pelo API Gateway.
+- Utilize o barramento de eventos para comunicação assíncrona entre serviços.
