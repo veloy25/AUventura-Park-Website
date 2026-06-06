@@ -1,26 +1,101 @@
 require("dotenv").config();
 const mysql = require("mysql2");
 
-const DB_HOST     = process.env.DB_HOST     || "127.0.0.1";
+const host = process.env.DB_HOST;
+const DbName = process.env.DB_DATABASE || "auventura";
+
+let rootPool;
+let pool;
+
+// if (host.includes(".com")){
+//   // Conexão Nuvem (Aiven)
+//   const DB_USER     = process.env.DB_USER;     
+//   const DB_PASSWORD = process.env.DB_PASSWORD;
+//   const DB_PORT     = process.env.DB_PORT;    
+//   const JWT_SECRET  = process.env.JWT_SECRET || "super_secret_login_key"
+
+//   rootPool = mysql.createPool({
+//     host: host, 
+//     user: DB_USER, 
+//     password: DB_PASSWORD, 
+//     port: DB_PORT,
+//     waitForConnections: true, 
+//     connectionLimit: 10, 
+//     queueLimit: 0, 
+//     ssl: { rejectUnauthorized: false }
+//   });
+
+//   pool = mysql.createPool({
+//     host: host, 
+//     user: DB_USER, 
+//     password: DB_PASSWORD,
+//     database: DbName, 
+//     port: DB_PORT,
+//     waitForConnections: true, 
+//     connectionLimit: 10, 
+//     queueLimit: 0,
+//     dateStrings: true,
+//     ssl: { rejectUnauthorized: false }
+//   }).promise();
+
+// } else{
+//   // Conexão Local
+//   const DB_USER     = process.env.DB_USER     || "root";
+//   const DB_PASSWORD = process.env.DB_PASSWORD || "";
+//   const DB_PORT     = process.env.DB_PORT     || 3306;
+
+//   rootPool = mysql.createPool({
+//     host: host, 
+//     user: DB_USER,
+//     password: DB_PASSWORD, 
+//     port: DB_PORT,
+//     waitForConnections: true, 
+//     connectionLimit: 2, 
+//     queueLimit: 0,
+//   });
+
+//   pool = mysql.createPool({
+//     host: host, 
+//     user: DB_USER, 
+//     password: DB_PASSWORD,
+//     database: DbName, 
+//     port: DB_PORT,
+//     waitForConnections: true, 
+//     connectionLimit: 10, 
+//     queueLimit: 0,
+//     dateStrings: true,
+//   }).promise();
+// }
+
+//Conexão Local
 const DB_USER     = process.env.DB_USER     || "root";
 const DB_PASSWORD = process.env.DB_PASSWORD || "";
-const DB_NAME     = process.env.DB_DATABASE || "auventura";
 const DB_PORT     = process.env.DB_PORT     || 3306;
 
-const rootPool = mysql.createPool({
-  host: DB_HOST, user: DB_USER, password: DB_PASSWORD, port: DB_PORT,
-  waitForConnections: true, connectionLimit: 2, queueLimit: 0,
+rootPool = mysql.createPool({
+  host: host, 
+  user: DB_USER,
+  password: DB_PASSWORD, 
+  port: DB_PORT,
+  waitForConnections: true, 
+  connectionLimit: 2, 
+  queueLimit: 0,
 });
 
-const pool = mysql.createPool({
-  host: DB_HOST, user: DB_USER, password: DB_PASSWORD,
-  database: DB_NAME, port: DB_PORT,
-  waitForConnections: true, connectionLimit: 10, queueLimit: 0,
+pool = mysql.createPool({
+  host: host, 
+  user: DB_USER, 
+  password: DB_PASSWORD,
+  database: DbName, 
+  port: DB_PORT,
+  waitForConnections: true, 
+  connectionLimit: 10, 
+  queueLimit: 0,
   dateStrings: true,
 }).promise();
 
 const ensureDatabase = async () => {
-  await rootPool.promise().query(`CREATE DATABASE IF NOT EXISTS \`${DB_NAME}\``);
+  await rootPool.promise().query(`CREATE DATABASE IF NOT EXISTS \`${DbName}\``);
 };
 
 const initializeDatabase = async () => {
