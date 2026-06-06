@@ -1,8 +1,8 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
 import { apiGetAgendamentos, apiCreateAgendamento } from "../services/agendamentosService";
 import { apiGetPets, apiCreatePet } from "../services/petsService";
+import TimePicker from "../components/TimePicker"; // ← adicionado
 import "../styles/Agendamentos.css";
-
 
 // ─── Serviços ─────────────────────────────────────────────────────────────────
 const SERVICOS = [
@@ -48,7 +48,6 @@ const SERVICOS = [
   },
 ];
 
-
 // ─── Geração de slots ─────────────────────────────────────────────────────────
 function gerarSlots(servico) {
   const slots = [];
@@ -65,9 +64,7 @@ function gerarSlots(servico) {
   return slots;
 }
 
-
 const SERVICOS_COM_SLOTS = ["banho", "tosa", "banho_tosa", "adestramento"];
-
 
 // ─── Raças / Vacinas ──────────────────────────────────────────────────────────
 const RACAS = [
@@ -81,98 +78,19 @@ const RACAS = [
   "Sem raça definida(SRD)", "Weimaraner", "Yorkshire Terrier",
 ];
 
-
 const VACINAS = [
   { id: "antirrabica", label: "Antirrábica" },
   { id: "polivalente", label: "Polivalente" },
   { id: "traqueobronquite", label: "Traqueobronquite" },
 ];
 
-
 const AGENDAMENTO_VAZIO = { petId: "", servico: "", data: "", horario: "", observacoes: "" };
 const PET_VAZIO = { nome: "", idade: "", peso: "", raca: "", vacinas: [] };
-
 
 const servicoLabel = {
   daycare: "Daycare 🏡", banho: "Banho 🛁", tosa: "Tosa ✂️",
   banho_tosa: "Banho e Tosa 🛁✂️", adestramento: "Adestramento 🎓",
 };
-
-
-// ─── TimePicker (drum roll) ───────────────────────────────────────────────────
-const ITEM_HEIGHT = 44;
-
-function TimePicker({ slots, value, onChange, horariosOcupados = [], disabled = false }) {
-  const listRef = useRef(null);
-
-  const snapToNearest = useCallback(() => {
-    const el = listRef.current;
-    if (!el) return;
-    const index = Math.round(el.scrollTop / ITEM_HEIGHT);
-    const clamped = Math.max(0, Math.min(index, slots.length - 1));
-    el.scrollTo({ top: clamped * ITEM_HEIGHT, behavior: "smooth" });
-    if (!horariosOcupados.includes(slots[clamped])) {
-      onChange(slots[clamped]);
-    }
-  }, [slots, onChange, horariosOcupados]);
-
-  useEffect(() => {
-    const el = listRef.current;
-    if (!el || !value) return;
-    const index = slots.indexOf(value);
-    if (index >= 0) el.scrollTo({ top: index * ITEM_HEIGHT, behavior: "smooth" });
-  }, [value, slots]);
-
-  useEffect(() => {
-    const el = listRef.current;
-    if (!el) return;
-    let timeout;
-    const onScroll = () => { clearTimeout(timeout); timeout = setTimeout(snapToNearest, 120); };
-    el.addEventListener("scroll", onScroll, { passive: true });
-    return () => { el.removeEventListener("scroll", onScroll); clearTimeout(timeout); };
-  }, [snapToNearest]);
-
-  return (
-    <div className="tp-root" aria-label="Selecionar horário">
-      <div className="tp-fade tp-fade-top" />
-      <div className="tp-selector" />
-      <div className="tp-fade tp-fade-bottom" />
-      <ul
-        ref={listRef}
-        className="tp-list"
-        role="listbox"
-        aria-label="Horários disponíveis"
-        style={{ opacity: disabled ? 0.4 : 1, pointerEvents: disabled ? "none" : "auto" }}
-      >
-        <li className="tp-spacer" aria-hidden="true" />
-        {slots.map((slot) => {
-          const ocupado = horariosOcupados.includes(slot);
-          const ativo = value === slot;
-          return (
-            <li
-              key={slot}
-              role="option"
-              aria-selected={ativo}
-              aria-disabled={ocupado}
-              className={`tp-item ${ativo ? "tp-item--active" : ""} ${ocupado ? "tp-item--ocupado" : ""}`}
-              onClick={() => {
-                if (ocupado) return;
-                onChange(slot);
-                const index = slots.indexOf(slot);
-                listRef.current?.scrollTo({ top: index * ITEM_HEIGHT, behavior: "smooth" });
-              }}
-            >
-              <span className="tp-item-time">{slot}</span>
-              {ocupado && <span className="tp-item-tag">ocupado</span>}
-            </li>
-          );
-        })}
-        <li className="tp-spacer" aria-hidden="true" />
-      </ul>
-    </div>
-  );
-}
-
 
 // ─── Componente principal ─────────────────────────────────────────────────────
 function Agendamentos({ isLogado, user, setAbaAtiva, servicoPendente, setServicoPendente, setDaycareAtivo }) {
@@ -181,7 +99,7 @@ function Agendamentos({ isLogado, user, setAbaAtiva, servicoPendente, setServico
   const [pets, setPets] = useState([]);
   const [agendamentos, setAgendamentos] = useState([]);
   const [novoAgendamento, setNovoAgendamento] = useState(AGENDAMENTO_VAZIO);
-  const [loadingAg, setLoadingAg] = useState(false);
+  const [setLoadingAg] = useState(false);
   const [errorAg, setErrorAg] = useState("");
   const [feedbackAg, setFeedbackAg] = useState("");
   const [showPetForm, setShowPetForm] = useState(false);
@@ -195,14 +113,12 @@ function Agendamentos({ isLogado, user, setAbaAtiva, servicoPendente, setServico
   const [loadingSlots, setLoadingSlots] = useState(false);
   const racaRef = useRef(null);
 
-
   useEffect(() => {
     if (isLogado) {
       loadAgendamentos();
       loadPets();
     }
   }, [isLogado]);
-
 
   useEffect(() => {
     if (isLogado && servicoPendente) {
@@ -213,7 +129,6 @@ function Agendamentos({ isLogado, user, setAbaAtiva, servicoPendente, setServico
     }
   }, [isLogado, servicoPendente]);
 
-
   useEffect(() => {
     const handler = (e) => {
       if (racaRef.current && !racaRef.current.contains(e.target)) setRacaSugestoes([]);
@@ -222,8 +137,6 @@ function Agendamentos({ isLogado, user, setAbaAtiva, servicoPendente, setServico
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
-
-  // Busca horários ocupados quando data ou serviço mudam
   useEffect(() => {
     const { data, servico } = novoAgendamento;
     if (!data || !servico || !SERVICOS_COM_SLOTS.includes(servico)) {
@@ -242,7 +155,6 @@ function Agendamentos({ isLogado, user, setAbaAtiva, servicoPendente, setServico
     return () => controller.abort();
   }, [novoAgendamento.data, novoAgendamento.servico]);
 
-
   const loadAgendamentos = async () => {
     const token = localStorage.getItem("authToken");
     if (!token) return;
@@ -257,7 +169,6 @@ function Agendamentos({ isLogado, user, setAbaAtiva, servicoPendente, setServico
     }
   };
 
-
   const loadPets = async () => {
     const token = localStorage.getItem("authToken");
     if (!token) return;
@@ -269,32 +180,26 @@ function Agendamentos({ isLogado, user, setAbaAtiva, servicoPendente, setServico
     }
   };
 
-
   const abrirDetalhe = (servico) => {
     setServicoSelecionado(servico);
     setTela("detalhe");
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-
-  // ─── ÚNICA MUDANÇA: daycare redireciona para o componente próprio ─────────
   const handleAgendeJa = () => {
     if (!isLogado) {
       setServicoPendente(servicoSelecionado);
       setAbaAtiva("login");
       return;
     }
-
     if (servicoSelecionado.id === "daycare") {
       setDaycareAtivo(true);
       return;
     }
-
     setNovoAgendamento({ ...AGENDAMENTO_VAZIO, servico: servicoSelecionado.id });
     setTela("form");
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
-
 
   const handleAgendamentoSubmit = async (e) => {
     e.preventDefault();
@@ -316,7 +221,6 @@ function Agendamentos({ isLogado, user, setAbaAtiva, servicoPendente, setServico
     }
   };
 
-
   const handleRacaChange = (val) => {
     setRacaInput(val);
     setNovoPet((p) => ({ ...p, raca: val }));
@@ -324,11 +228,9 @@ function Agendamentos({ isLogado, user, setAbaAtiva, servicoPendente, setServico
     setRacaSugestoes(RACAS.filter((r) => r.toLowerCase().startsWith(val.toLowerCase())).slice(0, 6));
   };
 
-
   const selecionarRaca = (raca) => {
     setRacaInput(raca); setNovoPet((p) => ({ ...p, raca })); setRacaSugestoes([]);
   };
-
 
   const toggleVacina = (id) => {
     setNovoPet((p) => ({
@@ -337,13 +239,11 @@ function Agendamentos({ isLogado, user, setAbaAtiva, servicoPendente, setServico
     }));
   };
 
-
   const handlePetSubmit = async (e) => {
     e.preventDefault();
     setErrorPet(""); setFeedbackPet("");
     const { nome, idade, peso, raca } = novoPet;
     if (!nome || !idade || !peso || !raca) { setErrorPet("Preencha todos os campos obrigatórios."); return; }
-
     const token = localStorage.getItem("authToken");
     setLoadingPet(true);
     try {
@@ -358,7 +258,6 @@ function Agendamentos({ isLogado, user, setAbaAtiva, servicoPendente, setServico
       setLoadingPet(false);
     }
   };
-
 
   // ─── TELA 1: Grid de serviços ───────────────────────────────────────────────
   if (tela === "servicos") return (
@@ -400,7 +299,6 @@ function Agendamentos({ isLogado, user, setAbaAtiva, servicoPendente, setServico
     </section>
   );
 
-
   // ─── TELA 2: Detalhe ────────────────────────────────────────────────────────
   if (tela === "detalhe" && servicoSelecionado) return (
     <section className="ag-page">
@@ -422,7 +320,6 @@ function Agendamentos({ isLogado, user, setAbaAtiva, servicoPendente, setServico
     </section>
   );
 
-
   // ─── TELA 3: Formulário ─────────────────────────────────────────────────────
   if (tela === "form") {
     const servicoAtual = SERVICOS.find((s) => s.id === novoAgendamento.servico);
@@ -443,7 +340,6 @@ function Agendamentos({ isLogado, user, setAbaAtiva, servicoPendente, setServico
           {feedbackAg && <p className="form-success">{feedbackAg}</p>}
 
           <form className="ag-form-card" onSubmit={handleAgendamentoSubmit}>
-
             {/* Pet */}
             <div className="form-group">
               <label className="form-label">Qual pet vai ser atendido?</label>
@@ -572,7 +468,6 @@ function Agendamentos({ isLogado, user, setAbaAtiva, servicoPendente, setServico
   return null;
 }
 
-
 function AgendamentoCard({ a }) {
   return (
     <div className="agendamento-card">
@@ -588,6 +483,5 @@ function AgendamentoCard({ a }) {
     </div>
   );
 }
-
 
 export default Agendamentos;

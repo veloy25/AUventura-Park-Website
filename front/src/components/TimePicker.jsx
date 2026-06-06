@@ -4,9 +4,6 @@ const ITEM_HEIGHT = 44; // px — touch target mínimo
 
 export default function TimePicker({ slots, value, onChange, horariosOcupados = [], disabled = false }) {
   const listRef = useRef(null);
-  const isDragging = useRef(false);
-  const startY = useRef(0);
-  const startScroll = useRef(0);
 
   // Snapeia no slot mais próximo ao parar o scroll
   const snapToNearest = useCallback(() => {

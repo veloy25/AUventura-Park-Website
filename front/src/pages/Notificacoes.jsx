@@ -1,27 +1,30 @@
 import { useState, useEffect } from "react";
 import {
   apiGetNotificacoes,
-  apiGetNotificacoesNaoLidas,
   apiMarcarNotificacaoComoLida,
   apiExcluirNotificacao
 } from "../services/notificacoesService";
 import "../styles/Notificacoes.css";
 
-function Notificacoes({ user }) {
+function Notificacoes() {
   const [notificacoes, setNotificacoes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
-  const token = localStorage.getItem("authToken");
+  const [feedback, setFeedback] = useState("");
+  const [confirmDeleteId, setConfirmDeleteId] = useState(null);
 
   useEffect(() => {
+    const token = localStorage.getItem("authToken");
     if (!token) return;
     carregarNotificacoes();
-  }, [token]);
+  }, []);
 
   const carregarNotificacoes = async () => {
+    const token = localStorage.getItem("authToken");
+    if (!token) return;
     try {
       setLoading(true);
+      setError(null);
       const data = await apiGetNotificacoes(token);
       setNotificacoes(data);
     } catch (err) {
@@ -32,32 +35,40 @@ function Notificacoes({ user }) {
   };
 
   const marcarComoLida = async (id) => {
+    const token = localStorage.getItem("authToken");
     try {
+      setFeedback("");
+      setError(null);
       await apiMarcarNotificacaoComoLida(token, id);
-      // Recarregar notificações para refletir mudanças
       await carregarNotificacoes();
-      // Notificar outros componentes sobre a mudança
-      window.dispatchEvent(new CustomEvent('notificacoes-updated'));
+      window.dispatchEvent(new CustomEvent("notificacoes-updated"));
+      setFeedback("Notificação marcada como lida.");
     } catch (err) {
-      alert("Erro ao marcar como lida: " + err.message);
+      setError("Erro ao marcar como lida: " + err.message);
     }
   };
 
-  const excluirNotificacao = async (id) => {
-    if (!confirm("Tem certeza que deseja excluir esta notificação?")) return;
+  const confirmarExclusao = (id) => {
+    setConfirmDeleteId(id);
+    setFeedback("");
+    setError(null);
+  };
+
+  const excluirNotificacao = async () => {
+    const token = localStorage.getItem("authToken");
     try {
-      await apiExcluirNotificacao(token, id);
-      // Recarregar notificações para refletir mudanças
+      await apiExcluirNotificacao(token, confirmDeleteId);
+      setConfirmDeleteId(null);
       await carregarNotificacoes();
-      // Notificar outros componentes sobre a mudança
-      window.dispatchEvent(new CustomEvent('notificacoes-updated'));
+      window.dispatchEvent(new CustomEvent("notificacoes-updated"));
+      setFeedback("Notificação excluída com sucesso.");
     } catch (err) {
-      alert("Erro ao excluir: " + err.message);
+      setConfirmDeleteId(null);
+      setError("Erro ao excluir: " + err.message);
     }
   };
 
   if (loading) return <div className="notificacoes-loading">Carregando notificações...</div>;
-  if (error) return <div className="notificacoes-error">Erro: {error}</div>;
 
   return (
     <section className="notificacoes-page">
@@ -65,6 +76,25 @@ function Notificacoes({ user }) {
         <h2>Notificações</h2>
         <p>Acompanhe as novidades e atualizações da AUventura Park</p>
       </div>
+
+      {/* Feedback e erro inline — sem alert() */}
+      {feedback && <p className="form-success">{feedback}</p>}
+      {error && <p className="form-error">{error}</p>}
+
+      {/* Modal de confirmação de exclusão — sem confirm() */}
+      {confirmDeleteId && (
+        <div className="confirm-modal">
+          <p>Tem certeza que deseja excluir esta notificação?</p>
+          <div className="confirm-modal-actions">
+            <button className="btn-excluir" onClick={excluirNotificacao}>
+              Sim, excluir
+            </button>
+            <button className="secondary-button" onClick={() => setConfirmDeleteId(null)}>
+              Cancelar
+            </button>
+          </div>
+        </div>
+      )}
 
       <div className="notificacoes-list">
         {notificacoes.length === 0 ? (
@@ -74,7 +104,10 @@ function Notificacoes({ user }) {
           </div>
         ) : (
           notificacoes.map((notif) => (
-            <div key={notif.id} className={`notificacao-item ${notif.lida ? 'lida' : 'nao-lida'}`}>
+            <div
+              key={notif.id}
+              className={`notificacao-item ${notif.lida ? "lida" : "nao-lida"}`}
+            >
               <div className="notificacao-content">
                 <div className="notificacao-header">
                   <h4>{notif.titulo}</h4>
@@ -82,7 +115,7 @@ function Notificacoes({ user }) {
                 </div>
                 <p className="notificacao-mensagem">{notif.mensagem}</p>
                 <small className="notificacao-data">
-                  {new Date(notif.criado_em).toLocaleString('pt-BR')}
+                  {new Date(notif.criado_em).toLocaleString("pt-BR")}
                 </small>
               </div>
               <div className="notificacao-actions">
@@ -96,7 +129,7 @@ function Notificacoes({ user }) {
                 )}
                 <button
                   className="btn-excluir"
-                  onClick={() => excluirNotificacao(notif.id)}
+                  onClick={() => confirmarExclusao(notif.id)}
                 >
                   Excluir
                 </button>
