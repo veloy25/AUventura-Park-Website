@@ -3,7 +3,7 @@ const express = require("express");
 const cors = require("cors");
 const axios = require("axios");
 const { pool, initializeDatabase } = require("../../shared/database");
-const { verifyToken } = require("../../shared/auth");
+const { authenticate, verifyToken } = require("../../shared/auth");
 
 const app = express();
 const PORT = process.env.PETS_SERVICE_PORT || 3004;
@@ -17,19 +17,6 @@ initializeDatabase().catch((error) => {
   process.exit(1);
 });
 
-const authenticate = (req, res, next) => {
-  const authHeader = req.headers.authorization;
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    return res.status(401).json({ error: "Token de autenticacao ausente." });
-  }
-  const token = authHeader.split(" ")[1];
-  try {
-    req.user = verifyToken(token);
-    next();
-  } catch (error) {
-    return res.status(401).json({ error: "Token invalido ou expirado." });
-  }
-};
 
 // Recebe eventos do barramento
 app.post("/eventos", (req, res) => {

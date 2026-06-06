@@ -2,7 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const { pool, initializeDatabase } = require("../../shared/database");
-const { verifyToken } = require("../../shared/auth");
+const { authenticate, verifyToken } = require("../../shared/auth");
 
 const app = express();
 const PORT = process.env.NOTIFICACOES_SERVICE_PORT || 3007;
@@ -77,18 +77,6 @@ app.post("/eventos", async (req, res) => {
   res.status(200).json({ message: "Evento processado." });
 });
 
-// Middleware de autenticacao
-const authenticate = (req, res, next) => {
-  const authHeader = req.headers.authorization;
-  if (!authHeader?.startsWith("Bearer "))
-    return res.status(401).json({ error: "Token ausente." });
-  try {
-    req.user = verifyToken(authHeader.split(" ")[1]);
-    next();
-  } catch {
-    return res.status(401).json({ error: "Token invalido ou expirado." });
-  }
-};
 
 // GET / - Todas as notificacoes do usuario
 app.get("/", authenticate, async (req, res) => {

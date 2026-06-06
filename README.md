@@ -16,7 +16,6 @@ A aplicação oferece:
 
 - `back/`: backend em Node.js e Express, com microsserviços e conexão MySQL.
 - `front/`: frontend em React + Vite para interface com usuários.
-- `back/docker-compose.yml`: definição dos serviços e dependências para ambiente local.
 
 ## ✨ Funcionalidades principais
 
@@ -56,41 +55,67 @@ npm install
 npm run dev
 ```
 
-### 4. Executando com Docker Compose
-
-Caso queira rodar todos os serviços juntos, utilize o arquivo `back/docker-compose.yml`.
-
-```bash
-cd back
-docker compose up
-```
-
 > O backend utiliza `dotenv` para variáveis de ambiente. Configure seu `.env` com as credenciais do banco e as chaves necessárias antes de iniciar.
 
 ## 📁 Estrutura de pastas
 
 ```
 back/
-  ├─ docker-compose.yml
-  ├─ index.js
+  ├─ node_modules/
+  ├─ services/
+  │   ├─ agendamentos-service/
+  │   ├─ api-gateway/
+  │   ├─ barramento-service/
+  │   ├─ contato-service/
+  │   ├─ daycare-service/
+  │   ├─ depoimentos-service/
+  │   ├─ notificacoes-service/
+  │   ├─ pets-service/
+  │   └─ user-service/
+  ├─ shared/
+  │   ├─ auth.js
+  │   ├─ bdConnection.js
+  │   └─ database.js
+  ├─ .env
+  ├─ MICROSERVICES.md
+  ├─ nodemon.json
+  ├─ package-lock.json
   ├─ package.json
-  ├─ schema.sql
-  ├─ microsservicos/
-  │   ├─ reviews.js
-  │   └─ user.js
-  └─ services/
-      ├─ agendamentos-service/
-      ├─ api-gateway/
-      ├─ depoimentos-service/
-      └─ user-service/
+  └─ schema.sql
 front/
+  ├─ node_modules/
+  ├─ public/
+  ├─ src/
+  │   ├─ components/
+  │   │   ├─ Header.jsx
+  │   │   ├─ NavBar.jsx
+  │   │   └─ TimePicker.jsx        
+  │   ├─ pages/
+  │   │   ├─ Agendamentos.jsx      
+  │   │   ├─ Contato.jsx
+  │   │   ├─ Daycare.jsx
+  │   │   ├─ Depoimentos.jsx       
+  │   │   ├─ Home.jsx
+  │   │   ├─ Login.jsx
+  │   │   ├─ MyPet.jsx
+  │   │   └─ Notificacoes.jsx      
+  │   ├─ services/
+  │   │   ├─ agendamentosService.js
+  │   │   ├─ authService.js
+  │   │   ├─ daycareService.js
+  │   │   ├─ depoimentosService.js
+  │   │   ├─ notificacoesService.js
+  │   │   └─ petsService.js
+  │   ├─ styles/
+  │   ├─ App.jsx
+  │   └─ main.jsx
+  ├─ .gitignore
+  ├─ eslint.config.js
+  ├─ index.html
+  ├─ package-lock.json
   ├─ package.json
-  ├─ vite.config.js
-  └─ src/
-      ├─ App.jsx
-      ├─ main.jsx
-      ├─ components/
-      └─ pages/
+  ├─ README.md
+  └─ vite.config.js
 ```
 
 ## 👥 Equipe
