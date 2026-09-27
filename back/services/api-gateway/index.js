@@ -15,6 +15,14 @@ const CONTACT_SERVICE_URL     = process.env.CONTACT_SERVICE_URL     || "http://l
 app.use(cors());
 app.use(express.json());
 
+app.get("/", (req, res) => {
+  res.json({
+    name: "AUventura Park API",
+    status: "running",
+    health: "/health",
+  });
+});
+
 // Health check
 app.get("/health", (req, res) => {
   res.json({ status: "API Gateway is running" });

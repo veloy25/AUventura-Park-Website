@@ -1,0 +1,193 @@
+x-backend-healthcheck: &backend-healthcheck
+  test: ["CMD", "node", "-e", "const {pool}=require('./shared/database'); pool.query('SELECT COUNT(*) AS n FROM information_schema.tables WHERE table_schema = DATABASE()').then(([rows]) => process.exit(Number(rows[0].n) === 7 ? 0 : 1)).catch(() => process.exit(1))"]
+  interval: 5s
+  timeout: 5s
+  retries: 20
+  start_period: 10s
+
+services:
+  db:
+    image: mysql:8.4
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: auventura
+      MYSQL_USER: auventura
+      MYSQL_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in .env}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?Set MYSQL_ROOT_PASSWORD in .env}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u root -p\"$${MYSQL_ROOT_PASSWORD}\" --silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 30s
+
+  barramento-service:
+    image: auventura/backend:local
+    build:
+      context: ./back
+      dockerfile: Dockerfile
+    command: ["node", "services/barramento-service/index.js"]
+    restart: unless-stopped
+    environment:
+      BARRAMENTO_PORT: "10000"
+      NOTIFICACOES_SERVICE_URL: http://notificacoes-service:3007
+    depends_on:
+      notificacoes-service:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://127.0.0.1:10000/health', r => process.exit(r.statusCode === 200 ? 0 : 1)).on('error', () => process.exit(1))"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+      start_period: 5s
+
+  user-service:
+    image: auventura/backend:local
+    build:
+      context: ./back
+      dockerfile: Dockerfile
+    command: ["node", "services/user-service/index.js"]
+    restart: unless-stopped
+    environment: &backend-environment
+      DB_HOST: db
+      DB_PORT: "3306"
+      DB_NAME: auventura
+      DB_USER: auventura
+      DB_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in .env}
+      JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET in .env}
+      JWT_EXPIRATION: 2h
+      BARRAMENTO_URL: http://barramento-service:10000
+      USER_SERVICE_PORT: "3001"
+    depends_on: &backend-dependencies
+      db:
+        condition: service_healthy
+      barramento-service:
+        condition: service_healthy
+    healthcheck: *backend-healthcheck
+
+  depoimentos-service:
+    image: auventura/backend:local
+    build:
+      context: ./back
+      dockerfile: Dockerfile
+    command: ["node", "services/depoimentos-service/index.js"]
+    restart: unless-stopped
+    environment:
+      <<: *backend-environment
+      TESTIMONIALS_SERVICE_PORT: "3002"
+    depends_on: *backend-dependencies
+    healthcheck: *backend-healthcheck
+
+  agendamentos-service:
+    image: auventura/backend:local
+    build:
+      context: ./back
+      dockerfile: Dockerfile
+    command: ["node", "services/agendamentos-service/index.js"]
+    restart: unless-stopped
+    environment:
+      <<: *backend-environment
+      SCHEDULING_SERVICE_PORT: "3003"
+    depends_on: *backend-dependencies
+    healthcheck: *backend-healthcheck
+
+  pets-service:
+    image: auventura/backend:local
+    build:
+      context: ./back
+      dockerfile: Dockerfile
+    command: ["node", "services/pets-service/index.js"]
+    restart: unless-stopped
+    environment:
+      <<: *backend-environment
+      PETS_SERVICE_PORT: "3004"
+    depends_on: *backend-dependencies
+    healthcheck: *backend-healthcheck
+
+  daycare-service:
+    image: auventura/backend:local
+    build:
+      context: ./back
+      dockerfile: Dockerfile
+    command: ["node", "services/daycare-service/index.js"]
+    restart: unless-stopped
+    environment:
+      <<: *backend-environment
+      DAYCARE_SERVICE_PORT: "3005"
+    depends_on: *backend-dependencies
+    healthcheck: *backend-healthcheck
+
+  contato-service:
+    image: auventura/backend:local
+    build:
+      context: ./back
+      dockerfile: Dockerfile
+    command: ["node", "services/contato-service/index.js"]
+    restart: unless-stopped
+    environment:
+      <<: *backend-environment
+      CONTACT_SERVICE_PORT: "3006"
+    depends_on: *backend-dependencies
+    healthcheck: *backend-healthcheck
+
+  notificacoes-service:
+    image: auventura/backend:local
+    build:
+      context: ./back
+      dockerfile: Dockerfile
+    command: ["node", "services/notificacoes-service/index.js"]
+    restart: unless-stopped
+    environment:
+      <<: *backend-environment
+      NOTIFICACOES_SERVICE_PORT: "3007"
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck: *backend-healthcheck
+
+  api-gateway:
+    image: auventura/backend:local
+    build:
+      context: ./back
+      dockerfile: Dockerfile
+    command: ["node", "services/api-gateway/index.js"]
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      API_GATEWAY_PORT: "3000"
+      USER_SERVICE_URL: http://user-service:3001
+      DEPOIMENTOS_SERVICE_URL: http://depoimentos-service:3002
+      SCHEDULING_SERVICE_URL: http://agendamentos-service:3003
+      PETS_SERVICE_URL: http://pets-service:3004
+      DAYCARE_SERVICE_URL: http://daycare-service:3005
+      CONTACT_SERVICE_URL: http://contato-service:3006
+      NOTIFICACOES_SERVICE_URL: http://notificacoes-service:3007
+    depends_on:
+      user-service:
+        condition: service_healthy
+      depoimentos-service:
+        condition: service_healthy
+      agendamentos-service:
+        condition: service_healthy
+      pets-service:
+        condition: service_healthy
+      daycare-service:
+        condition: service_healthy
+      contato-service:
+        condition: service_healthy
+      notificacoes-service:
+        condition: service_healthy
+      barramento-service:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://127.0.0.1:3000/health', r => process.exit(r.statusCode === 200 ? 0 : 1)).on('error', () => process.exit(1))"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+      start_period: 5s
+
+volumes:
+  mysql_data:

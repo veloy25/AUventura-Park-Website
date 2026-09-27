@@ -5,12 +5,17 @@ const app = express();
 app.use(express.json());
 
 const PORT = process.env.BARRAMENTO_PORT || 10000;
+const NOTIFICACOES_SERVICE_URL = process.env.NOTIFICACOES_SERVICE_URL || "http://localhost:3007";
 
 const ASSINANTES = {
-  "user:created":        ["http://localhost:3007"],
-  "agendamento:created": ["http://localhost:3007"],
-  "daycare:created":     ["http://localhost:3007"],
+  "user:created":        [NOTIFICACOES_SERVICE_URL],
+  "agendamento:created": [NOTIFICACOES_SERVICE_URL],
+  "daycare:created":     [NOTIFICACOES_SERVICE_URL],
 };
+
+app.get("/health", (req, res) => {
+  res.json({ status: "Barramento is running" });
+});
 
 app.post("/eventos", async (req, res) => {
   const evento = req.body;

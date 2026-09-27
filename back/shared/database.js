@@ -1,8 +1,15 @@
-require("dotenv").config();
+const path = require("path");
+
+require("dotenv").config({
+  path: path.join(__dirname, ".env")
+});
+
+
+
 const mysql = require("mysql2");
 
 const host = process.env.DB_HOST;
-const DbName = process.env.DB_DATABASE || "auventura";
+const DbName = process.env.DB_NAME || "auventura";
 
 let rootPool;
 let pool;
@@ -38,6 +45,13 @@ let pool;
 //     ssl: { rejectUnauthorized: false }
 //   }).promise();
 
+//   console.log({
+//   host: process.env.DB_HOST,
+//   port: process.env.DB_PORT,
+//   database: process.env.DB_DATABASE,
+//   user: process.env.DB_USER
+// });
+
 // } else{
 //   // Conexão Local
 //   const DB_USER     = process.env.DB_USER     || "root";
@@ -67,9 +81,9 @@ let pool;
 //   }).promise();
 // }
 
-//Conexão Local
+// Conexão Local
 const DB_USER     = process.env.DB_USER     || "root";
-const DB_PASSWORD = process.env.DB_PASSWORD || "";
+const DB_PASSWORD = process.env.DB_PASSWORD || "#2001Gb10";
 const DB_PORT     = process.env.DB_PORT     || 3306;
 
 rootPool = mysql.createPool({
