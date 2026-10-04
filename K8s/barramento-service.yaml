@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: barramento-service
+  namespace: auventura
+
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: barramento-service
+
+  template:
+    metadata:
+      labels:
+        app: barramento-service
+
+    spec:
+      containers:
+        - name: barramento-service
+          image: localhost:5000/auventura/backend:local
+          imagePullPolicy: IfNotPresent
+
+          command:
+            - node
+            - services/barramento-service/index.js
+
+          ports:
+            - containerPort: 10000
+
+          env:
+            - name: BARRAMENTO_PORT
+              value: "10000"
+
+---
+
+apiVersion: v1
+kind: Service
+
+metadata:
+  name: barramento-service
+  namespace: auventura
+
+spec:
+  selector:
+    app: barramento-service
+
+  ports:
+    - port: 10000
+      targetPort: 10000
