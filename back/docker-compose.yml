@@ -1,0 +1,139 @@
+services:
+  api-gateway:
+    build: ./services/api-gateway
+    container_name: api-gateway
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    environment:
+      API_GATEWAY_PORT: 3000
+      USER_SERVICE_URL: http://user-service:3001
+      DEPOIMENTOS_SERVICE_URL: http://depoimentos-service:3002
+      SCHEDULING_SERVICE_URL: http://agendamentos-service:3003
+      PETS_SERVICE_URL: http://pets-service:3004
+      DAYCARE_SERVICE_URL: http://daycare-service:3005
+      CONTACT_SERVICE_URL: http://contato-service:3006
+      NOTIFICACOES_SERVICE_URL: http://notificacoes-service:3007
+    depends_on:
+      - user-service
+      - depoimentos-service
+      - agendamentos-service
+      - pets-service
+      - daycare-service
+      - contato-service
+      - notificacoes-service
+
+  user-service:
+    build: ./services/user-service
+    container_name: user-service
+    ports:
+      - "3001:3001"
+    env_file:
+      - .env
+    environment:
+      USER_SERVICE_PORT: 3001
+      BARRAMENTO_URL: http://barramento-service:10000
+    volumes:
+      - ./shared:/shared:ro
+    depends_on:
+      - barramento-service
+
+  depoimentos-service:
+    build: ./services/depoimentos-service
+    container_name: depoimentos-service
+    ports:
+      - "3002:3002"
+    env_file:
+      - .env
+    environment:
+      TESTIMONIALS_SERVICE_PORT: 3002
+      BARRAMENTO_URL: http://barramento-service:10000
+    volumes:
+      - ./shared:/shared:ro
+    depends_on:
+      - barramento-service
+
+  agendamentos-service:
+    build: ./services/agendamentos-service
+    container_name: agendamentos-service
+    ports:
+      - "3003:3003"
+    env_file:
+      - .env
+    environment:
+      SCHEDULING_SERVICE_PORT: 3003
+      BARRAMENTO_URL: http://barramento-service:10000
+    volumes:
+      - ./shared:/shared:ro
+    depends_on:
+      - barramento-service
+
+  pets-service:
+    build: ./services/pets-service
+    container_name: pets-service
+    ports:
+      - "3004:3004"
+    env_file:
+      - .env
+    environment:
+      PETS_SERVICE_PORT: 3004
+      BARRAMENTO_URL: http://barramento-service:10000
+    volumes:
+      - ./shared:/shared:ro
+    depends_on:
+      - barramento-service
+
+  daycare-service:
+    build: ./services/daycare-service
+    container_name: daycare-service
+    ports:
+      - "3005:3005"
+    env_file:
+      - .env
+    environment:
+      DAYCARE_SERVICE_PORT: 3005
+      BARRAMENTO_URL: http://barramento-service:10000
+    volumes:
+      - ./shared:/shared:ro
+    depends_on:
+      - barramento-service
+
+  contato-service:
+    build: ./services/contato-service
+    container_name: contato-service
+    ports:
+      - "3006:3006"
+    env_file:
+      - .env
+    environment:
+      CONTACT_SERVICE_PORT: 3006
+      BARRAMENTO_URL: http://barramento-service:10000
+    volumes:
+      - ./shared:/shared:ro
+    depends_on:
+      - barramento-service
+
+  notificacoes-service:
+    build: ./services/notificacoes-service
+    container_name: notificacoes-service
+    ports:
+      - "3007:3007"
+    env_file:
+      - .env
+    environment:
+      NOTIFICACOES_SERVICE_PORT: 3007
+    volumes:
+      - ./shared:/shared:ro
+
+  barramento-service:
+    build: ./services/barramento-service
+    container_name: barramento-service
+    ports:
+      - "10000:10000"
+    env_file:
+      - .env
+    environment:
+      BARRAMENTO_PORT: 10000
+    depends_on:
+      - notificacoes-service
