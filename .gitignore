@@ -1,6 +1,7 @@
 # Backend environment files
 back/.env
 /.env
+K8s/.env
 
 # Node dependencies
 node_modules/
