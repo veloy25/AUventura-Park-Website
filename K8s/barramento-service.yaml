@@ -20,8 +20,8 @@ spec:
     spec:
       containers:
         - name: barramento-service
-          image: localhost:5000/auventura/backend:local
-          imagePullPolicy: IfNotPresent
+          image: auventura/backend:local
+          imagePullPolicy: Never
 
           command:
             - node
@@ -33,6 +33,9 @@ spec:
           env:
             - name: BARRAMENTO_PORT
               value: "10000"
+
+            - name: NOTIFICACOES_SERVICE_URL
+              value: http://notificacoes-service:3007
 
 ---
 

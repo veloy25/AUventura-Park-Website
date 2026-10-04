@@ -21,8 +21,8 @@ spec:
       containers:
         - name: notificacoes-service
 
-          image: localhost:5000/auventura/backend:local
-          imagePullPolicy: IfNotPresent
+          image: auventura/backend:local
+          imagePullPolicy: Never
 
           command:
             - node
@@ -45,19 +45,22 @@ spec:
               value: auventura
 
             - name: DB_PASSWORD
-              value: auventura123
+              valueFrom:
+                secretKeyRef:
+                  name: auventura-secrets
+                  key: DB_PASSWORD
 
             - name: JWT_SECRET
-              value: segredo123
+              valueFrom:
+                secretKeyRef:
+                  name: auventura-secrets
+                  key: JWT_SECRET
 
             - name: JWT_EXPIRATION
               value: 2h
 
             - name: BARRAMENTO_URL
               value: http://barramento-service:10000
-
-            - name: USER_SERVICE_PORT
-              value: "3001"
 
             - name: NOTIFICACOES_SERVICE_PORT
               value: "3007"
