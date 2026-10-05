@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 
+import 'pages/home_page.dart';
+import 'pages/services_page.dart';
+import 'pages/testimonials_page.dart';
+import 'pages/contact_page.dart';
+
 void main() {
   runApp(const AuventuraApp());
 }
@@ -14,138 +19,69 @@ class AuventuraApp extends StatelessWidget {
       title: 'AUventura Park',
       theme: ThemeData(
         useMaterial3: true,
+        scaffoldBackgroundColor: const Color(0xFFFDF8F2),
         colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.green,
+          seedColor: const Color(0xFF2D4A3E),
         ),
       ),
-      home: const HomePage(),
+      home: const MainNavigation(),
     );
   }
 }
 
-class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+class MainNavigation extends StatefulWidget {
+  const MainNavigation({super.key});
+
+  @override
+  State<MainNavigation> createState() => _MainNavigationState();
+}
+
+class _MainNavigationState extends State<MainNavigation> {
+  int currentIndex = 0;
+
+  final pages = const [
+    HomePage(),
+    ServicesPage(),
+    TestimonialsPage(),
+    ContactPage(),
+  ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'AUventura Park',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
+      body: IndexedStack(
+        index: currentIndex,
+        children: pages,
+      ),
+      bottomNavigationBar: NavigationBar(
+        selectedIndex: currentIndex,
+        onDestinationSelected: (index) {
+          setState(() {
+            currentIndex = index;
+          });
+        },
+        destinations: const [
+          NavigationDestination(
+            icon: Icon(Icons.home_outlined),
+            selectedIcon: Icon(Icons.home),
+            label: 'Home',
           ),
-        ),
-        centerTitle: true,
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Bem-vindo ao AUventura Park!',
-              style: TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-
-            const SizedBox(height: 12),
-
-            const Text(
-              'Um espaço pensado para cuidar, divertir e proporcionar bem-estar ao seu pet.',
-              style: TextStyle(
-                fontSize: 16,
-              ),
-            ),
-
-            const SizedBox(height: 30),
-
-            const Text(
-              'Nossos serviços',
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-
-            const SizedBox(height: 16),
-
-            serviceCard(
-              icon: Icons.pets,
-              title: 'Daycare',
-              description:
-                  'Diversão, socialização e acompanhamento para o seu pet.',
-            ),
-
-            serviceCard(
-              icon: Icons.content_cut,
-              title: 'Banho e Tosa',
-              description:
-                  'Cuidados de higiene e estética com conforto e segurança.',
-            ),
-
-            serviceCard(
-              icon: Icons.home,
-              title: 'Hospedagem',
-              description:
-                  'Um ambiente seguro e confortável para seu pet enquanto você estiver fora.',
-            ),
-
-            const SizedBox(height: 20),
-
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () {},
-                child: const Text('Conheça nossos serviços'),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget serviceCard({
-    required IconData icon,
-    required String title,
-    required String description,
-  }) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 16),
-      child: Padding(
-        padding: const EdgeInsets.all(18),
-        child: Row(
-          children: [
-            Icon(
-              icon,
-              size: 40,
-            ),
-
-            const SizedBox(width: 16),
-
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-
-                  const SizedBox(height: 6),
-
-                  Text(description),
-                ],
-              ),
-            ),
-          ],
-        ),
+          NavigationDestination(
+            icon: Icon(Icons.calendar_month_outlined),
+            selectedIcon: Icon(Icons.calendar_month),
+            label: 'Serviços',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.chat_bubble_outline),
+            selectedIcon: Icon(Icons.chat_bubble),
+            label: 'Depoimentos',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.mail_outline),
+            selectedIcon: Icon(Icons.mail),
+            label: 'Contato',
+          ),
+        ],
       ),
     );
   }
