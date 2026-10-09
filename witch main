@@ -1,0 +1,26 @@
+*   [33mb066431[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;33mtag: [m[1;33mv1.10.0[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m Merge pull request #11 from veloy25/feature/kubernetes
+[31m|[m[32m\[m  
+[31m|[m * [33m088b049[m[33m ([m[1;31morigin/feature/kubernetes[m[33m, [m[1;32mfeature/kubernetes[m[33m)[m feat(kubernetes): add Kubernetes deployment and service configurations for multiple microservices, including secrets management and persistent storage
+[31m|[m * [33m5e911c0[m feat(kubernetes): add Dockerfiles and docker-compose for microservices architecture
+[31m|[m * [33m7b99d13[m fix: update .gitignore to include K8s/.env and ensure proper newline at end of file
+[31m|[m * [33mec3531a[m feat(kubernetes): add initial Kubernetes infrastructure
+[31m|[m[31m/[m  
+* [33m1e53c09[m[33m ([m[1;33mtag: [m[1;33mv1.9.0[m[33m)[m build: containerize backend with Docker Compose
+* [33m92be6b2[m Refactor(Projeto): Remove bdConnection class and update database connection logic in database.js; update nanoid and postcss versions in package-lock.json
+* [33m9c542b1[m Fix(Projeto): Update dotenv version to 16.6.1 in package.json and package-lock.json
+*   [33m734c712[m Merge branch 'main' of https://github.com/veloy25/AUventura-Park-Website
+[33m|[m[34m\[m  
+[33m|[m * [33m4490b6b[m Feat(Projeto): Atualiza Estrutura do Projeto
+* [34m|[m [33m20f2e15[m Fix(Projeto): Refactor authentication import in pets and notifications services
+[34m|[m[34m/[m  
+* [33mafe9642[m Fix(Projeto): Refactor authentication middleware by importing from shared auth
+* [33m017b32a[m Fix(Projeto): Remove pasta microsservicos desnecessaria
+* [33m0d296fc[m Fix(Projeto): Corrige Home.jsx
+* [33md95a77e[m Fix(Projeto): Atualiza schema.sql
+*   [33m1e9a799[m Merge pull request #10 from veloy25/feature/barramento-eventos
+[35m|[m[36m\[m  
+[35m|[m * [33m51a57c2[m Fix(Projeto): Atualiza documentação
+* [36m|[m [33m3f94215[m Merge pull request #9 from veloy25/feature/barramento-eventos
+[1;31m|[m[36m\[m[36m|[m 
+[1;31m|[m * [33m2c26500[m Fix(Projeto): Arruma gateway das notificaoes para o barramento de eventos
+[1;31m|[m * [33m80281f2[m[33m ([m[1;31morigin/fix/notificacoes[m[33m)[m Feat(Projeto): Adiciona imagens
