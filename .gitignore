@@ -3,6 +3,9 @@ back/.env
 /.env
 K8s/.env
 
+# Ignora qualquer arquivo .env em subpastas do projeto
+**/.env
+
 # Node dependencies
 node_modules/
 front/node_modules/

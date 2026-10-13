@@ -9,13 +9,21 @@ services:
   db:
     image: mysql:8.4
     restart: unless-stopped
+
+    # Publica a porta do MySQL para o Windows.
+    # Assim o Dart rodando fora do Docker consegue acessar 127.0.0.1:3306.
+    ports:
+      - "3306:3306"
+
     environment:
       MYSQL_DATABASE: auventura
       MYSQL_USER: auventura
       MYSQL_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in .env}
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?Set MYSQL_ROOT_PASSWORD in .env}
+
     volumes:
       - mysql_data:/var/lib/mysql
+
     healthcheck:
       test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u root -p\"$${MYSQL_ROOT_PASSWORD}\" --silent"]
       interval: 5s
