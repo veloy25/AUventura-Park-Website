@@ -4,9 +4,16 @@ import 'pages/home_page.dart';
 import 'pages/services_page.dart';
 import 'pages/testimonials_page.dart';
 import 'pages/contact_page.dart';
+import 'pages/my_pet_page.dart';
+import 'services/sessao.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  // Abre já logado com o que está salvo; a validação no back vem depois,
+  // sem travar a abertura do app se o servidor estiver fora do ar.
+  await sessao.carregar();
   runApp(const AuventuraApp());
+  sessao.validar();
 }
 
 class AuventuraApp extends StatelessWidget {
@@ -37,21 +44,44 @@ class MainNavigation extends StatefulWidget {
 }
 
 class _MainNavigationState extends State<MainNavigation> {
-  int currentIndex = 0;
+  // A aba My Pet só existe logado, sempre na última posição.
+  static const _indiceMyPet = 4;
 
-  final pages = const [
-    HomePage(),
-    ServicesPage(),
-    TestimonialsPage(),
-    ContactPage(),
-  ];
+  int currentIndex = 0;
+  late bool _logado = sessao.logado;
+
+  @override
+  void initState() {
+    super.initState();
+    sessao.addListener(_aoMudarSessao);
+  }
+
+  @override
+  void dispose() {
+    sessao.removeListener(_aoMudarSessao);
+    super.dispose();
+  }
+
+  void _aoMudarSessao() {
+    setState(() {
+      if (sessao.logado && !_logado) currentIndex = _indiceMyPet;
+      if (!sessao.logado && currentIndex == _indiceMyPet) currentIndex = 0;
+      _logado = sessao.logado;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: IndexedStack(
         index: currentIndex,
-        children: pages,
+        children: [
+          const HomePage(),
+          const ServicesPage(),
+          const TestimonialsPage(),
+          const ContactPage(),
+          if (_logado) const MyPetPage(),
+        ],
       ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: currentIndex,
@@ -60,27 +90,33 @@ class _MainNavigationState extends State<MainNavigation> {
             currentIndex = index;
           });
         },
-        destinations: const [
-          NavigationDestination(
+        destinations: [
+          const NavigationDestination(
             icon: Icon(Icons.home_outlined),
             selectedIcon: Icon(Icons.home),
             label: 'Home',
           ),
-          NavigationDestination(
+          const NavigationDestination(
             icon: Icon(Icons.calendar_month_outlined),
             selectedIcon: Icon(Icons.calendar_month),
             label: 'Serviços',
           ),
-          NavigationDestination(
+          const NavigationDestination(
             icon: Icon(Icons.chat_bubble_outline),
             selectedIcon: Icon(Icons.chat_bubble),
             label: 'Depoimentos',
           ),
-          NavigationDestination(
+          const NavigationDestination(
             icon: Icon(Icons.mail_outline),
             selectedIcon: Icon(Icons.mail),
             label: 'Contato',
           ),
+          if (_logado)
+            const NavigationDestination(
+              icon: Icon(Icons.pets_outlined),
+              selectedIcon: Icon(Icons.pets),
+              label: 'My Pet',
+            ),
         ],
       ),
     );

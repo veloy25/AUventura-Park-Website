@@ -1,84 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../components/header_auventura.dart';
+import '../theme/cores.dart';
+
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
-  static const cream = Color(0xFFFDF8F2);
-  static const sand = Color(0xFFF0E8D8);
-  static const bark = Color(0xFFC4956A);
-  static const forest = Color(0xFF2D4A3E);
-  static const muted = Color(0xFF6B6560);
-  static const border = Color(0xFFE8DFD0);
+  static const cream = Cores.cream;
+  static const sand = Cores.sand;
+  static const bark = Cores.bark;
+  static const forest = Cores.forest;
+  static const muted = Cores.muted;
+  static const border = Cores.border;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: cream,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        surfaceTintColor: Colors.white,
-        elevation: 0.5,
-        toolbarHeight: 74,
-        titleSpacing: 16,
-        title: Row(
-          children: [
-            ClipOval(
-              child: Image.asset(
-                'assets/images/logo.png',
-                width: 44,
-                height: 44,
-                fit: BoxFit.cover,
-              ),
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  RichText(
-                    text: TextSpan(
-                      style: GoogleFonts.fraunces(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w900,
-                        color: forest,
-                      ),
-                      children: const [
-                        TextSpan(
-                          text: 'AU',
-                          style: TextStyle(color: bark),
-                        ),
-                        TextSpan(text: 'ventura Park'),
-                      ],
-                    ),
-                  ),
-                  Text(
-                    'Cuidado para seu pet, tranquilidade para você.',
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: GoogleFonts.dmSans(
-                      fontSize: 10,
-                      color: muted,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-        actions: const [
-          Padding(
-            padding: EdgeInsets.only(right: 10),
-            child: CircleAvatar(
-              backgroundColor: sand,
-              child: Icon(
-                Icons.person_outline,
-                color: forest,
-              ),
-            ),
-          ),
-        ],
-      ),
+      appBar: const HeaderAuventura(),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.fromLTRB(18, 20, 18, 38),
