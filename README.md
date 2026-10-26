@@ -47,6 +47,47 @@ npm install
 npm run start
 ```
 
+### Executando o backend com Docker Compose
+
+Pré-requisitos: Docker Desktop (ou Docker Engine) com o plugin Docker Compose.
+
+Na raiz do repositório, crie o arquivo de ambiente:
+
+```bash
+cp .env.example .env
+```
+
+Defina valores próprios para `DB_PASSWORD`, `MYSQL_ROOT_PASSWORD` e `JWT_SECRET` em `.env`. Não use nem publique credenciais reais neste arquivo.
+
+Compose reads `.env` from the repository root; `back/.env` is only for running the backend directly and is not used by Compose. MySQL stores its initial credentials in `mysql_data`, so changing `.env` later does not change the existing database user password. Keep the original `DB_PASSWORD` for that volume, or, only when its data is disposable, run `docker compose down -v` before starting again.
+
+Construa e inicie o API Gateway, os oito microsserviços e o MySQL:
+
+```bash
+docker compose build
+docker compose up -d
+docker compose ps
+```
+
+O API Gateway fica disponível em `http://localhost:3000`. A raiz (`/`) retorna o status da API, `/health` é o health check e as funcionalidades ficam nas rotas `/api/...`, como `/api/depoimentos`. MySQL e demais serviços ficam apenas na rede interna do Compose. O banco persiste no volume `mysql_data`, e as tabelas existentes são inicializadas pelos próprios serviços.
+
+Para acompanhar logs, parar e iniciar novamente:
+
+```bash
+docker compose logs -f
+docker compose down
+docker compose up -d
+```
+
+Para reconstruir sem cache:
+
+```bash
+docker compose build --no-cache
+docker compose up -d
+```
+
+`docker compose down -v` também remove o volume MySQL e todos os dados persistidos.
+
 ### 3. Executando o frontend
 
 ```bash

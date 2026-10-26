@@ -15,6 +15,14 @@ const CONTACT_SERVICE_URL     = process.env.CONTACT_SERVICE_URL     || "http://l
 app.use(cors());
 app.use(express.json());
 
+app.get("/", (req, res) => {
+  res.json({
+    name: "AUventura Park API",
+    status: "running",
+    health: "/health",
+  });
+});
+
 // Health check
 app.get("/health", (req, res) => {
   res.json({ status: "API Gateway is running" });
@@ -41,7 +49,7 @@ app.post("/api/login", async (req, res) => {
 
 app.get("/api/me", async (req, res) => {
   try {
-    const response = await axios.get(`${USER_SERVICE_URL}/me`, { headers: req.headers });
+    const response = await axios.get(`${USER_SERVICE_URL}/me`, { headers: { Authorization: req.headers.authorization } });
     res.status(response.status).json(response.data);
   } catch (error) {
     res.status(error.response?.status || 500).json(error.response?.data || { error: "User service error" });
@@ -79,7 +87,7 @@ app.get("/api/depoimentos/:id", async (req, res) => {
 // ── Agendamentos Service ──────────────────────────────────────────────────────
 app.get("/api/agendamentos", async (req, res) => {
   try {
-    const response = await axios.get(`${SCHEDULING_SERVICE_URL}/`, { headers: req.headers });
+    const response = await axios.get(`${SCHEDULING_SERVICE_URL}/`, { headers: { Authorization: req.headers.authorization } });
     res.status(response.status).json(response.data);
   } catch (error) {
     res.status(error.response?.status || 500).json(error.response?.data || { error: "Scheduling service error" });
@@ -88,7 +96,7 @@ app.get("/api/agendamentos", async (req, res) => {
 
 app.post("/api/agendamentos", async (req, res) => {
   try {
-    const response = await axios.post(`${SCHEDULING_SERVICE_URL}/`, req.body, { headers: req.headers });
+    const response = await axios.post(`${SCHEDULING_SERVICE_URL}/`, req.body, { headers: { Authorization: req.headers.authorization } });
     res.status(response.status).json(response.data);
   } catch (error) {
     res.status(error.response?.status || 500).json(error.response?.data || { error: "Scheduling service error" });
@@ -111,7 +119,7 @@ app.get("/api/agendamentos/horarios-ocupados", async (req, res) => {
 // ── Pets Service ──────────────────────────────────────────────────────────────
 app.get("/api/pets", async (req, res) => {
   try {
-    const response = await axios.get(`${PETS_SERVICE_URL}/`, { headers: req.headers });
+    const response = await axios.get(`${PETS_SERVICE_URL}/`, { headers: { Authorization: req.headers.authorization } });
     res.status(response.status).json(response.data);
   } catch (error) {
     res.status(error.response?.status || 500).json(error.response?.data || { error: "Pets service error" });
@@ -120,7 +128,7 @@ app.get("/api/pets", async (req, res) => {
 
 app.post("/api/pets", async (req, res) => {
   try {
-    const response = await axios.post(`${PETS_SERVICE_URL}/`, req.body, { headers: req.headers });
+    const response = await axios.post(`${PETS_SERVICE_URL}/`, req.body, { headers: { Authorization: req.headers.authorization } });
     res.status(response.status).json(response.data);
   } catch (error) {
     res.status(error.response?.status || 500).json(error.response?.data || { error: "Pets service error" });
@@ -129,7 +137,7 @@ app.post("/api/pets", async (req, res) => {
 
 app.delete("/api/pets/:id", async (req, res) => {
   try {
-    const response = await axios.delete(`${PETS_SERVICE_URL}/${req.params.id}`, { headers: req.headers });
+    const response = await axios.delete(`${PETS_SERVICE_URL}/${req.params.id}`, { headers: { Authorization: req.headers.authorization } });
     res.status(response.status).json(response.data);
   } catch (error) {
     res.status(error.response?.status || 500).json(error.response?.data || { error: "Pets service error" });
@@ -143,7 +151,7 @@ app.get("/api/daycare/verificar-day-teste/:petId", async (req, res) => {
   try {
     const response = await axios.get(
       `${DAYCARE_SERVICE_URL}/verificar-day-teste/${req.params.petId}`,
-      { headers: req.headers }
+      { headers: { Authorization: req.headers.authorization } }
     );
     res.status(response.status).json(response.data);
   } catch (error) {
@@ -155,7 +163,7 @@ app.get("/api/daycare/vagas", async (req, res) => {
   try {
     const response = await axios.get(`${DAYCARE_SERVICE_URL}/vagas`, {
       params: req.query,
-      headers: req.headers,
+      headers: { Authorization: req.headers.authorization },
     });
     res.status(response.status).json(response.data);
   } catch (error) {
@@ -165,7 +173,7 @@ app.get("/api/daycare/vagas", async (req, res) => {
 
 app.post("/api/daycare/agendar", async (req, res) => {
   try {
-    const response = await axios.post(`${DAYCARE_SERVICE_URL}/agendar`, req.body, { headers: req.headers });
+    const response = await axios.post(`${DAYCARE_SERVICE_URL}/agendar`, req.body, { headers: { Authorization: req.headers.authorization } });
     res.status(response.status).json(response.data);
   } catch (error) {
     res.status(error.response?.status || 500).json(error.response?.data || { error: "Daycare service error" });
@@ -199,7 +207,7 @@ const NOTIFICACOES_SERVICE_URL = process.env.NOTIFICACOES_SERVICE_URL || "http:/
 
 app.get("/api/notificacoes", async (req, res) => {
   try {
-    const response = await axios.get(`${NOTIFICACOES_SERVICE_URL}/`, { headers: req.headers });
+    const response = await axios.get(`${NOTIFICACOES_SERVICE_URL}/`, { headers: { Authorization: req.headers.authorization } });
     res.status(response.status).json(response.data);
   } catch (error) {
     res.status(error.response?.status || 500).json(error.response?.data || { error: "Notificações service error" });
@@ -208,7 +216,7 @@ app.get("/api/notificacoes", async (req, res) => {
 
 app.get("/api/notificacoes/nao-lidas", async (req, res) => {
   try {
-    const response = await axios.get(`${NOTIFICACOES_SERVICE_URL}/nao-lidas`, { headers: req.headers });
+    const response = await axios.get(`${NOTIFICACOES_SERVICE_URL}/nao-lidas`, { headers: { Authorization: req.headers.authorization } });
     res.status(response.status).json(response.data);
   } catch (error) {
     res.status(error.response?.status || 500).json(error.response?.data || { error: "Notificações service error" });
