@@ -115,6 +115,20 @@
   flex-wrap: wrap;
 }
 
+.confirm-modal {
+  background: var(--cream, #fdf6ec);
+  border: 1px solid #e0c97f;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.confirm-modal-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+}
+
 .btn-marcar-lida,
 .btn-excluir {
   padding: 12px 18px;

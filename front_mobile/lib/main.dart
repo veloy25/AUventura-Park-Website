@@ -1,12 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'pages/home_page.dart';
 import 'pages/services_page.dart';
 import 'pages/testimonials_page.dart';
 import 'pages/contact_page.dart';
+import 'pages/my_pet_page.dart';
+import 'services/sessao.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  // Abre já logado com o que está salvo; a validação no back vem depois,
+  // sem travar a abertura do app se o servidor estiver fora do ar.
+  await sessao.carregar();
   runApp(const AuventuraApp());
+  sessao.validar();
 }
 
 class AuventuraApp extends StatelessWidget {
@@ -17,6 +25,10 @@ class AuventuraApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'AUventura Park',
+      // Calendário e textos padrão do Flutter em português.
+      locale: const Locale('pt', 'BR'),
+      supportedLocales: const [Locale('pt', 'BR')],
+      localizationsDelegates: GlobalMaterialLocalizations.delegates,
       theme: ThemeData(
         useMaterial3: true,
         scaffoldBackgroundColor: const Color(0xFFFDF8F2),
@@ -37,21 +49,50 @@ class MainNavigation extends StatefulWidget {
 }
 
 class _MainNavigationState extends State<MainNavigation> {
-  int currentIndex = 0;
+  // A aba My Pet só existe logado, sempre na última posição.
+  static const _indiceMyPet = 4;
 
-  final pages = const [
-    HomePage(),
-    ServicesPage(),
-    TestimonialsPage(),
-    ContactPage(),
-  ];
+  int currentIndex = 0;
+  late bool _logado = sessao.logado;
+
+  // Como no site: quem faz login pelo "Agendar" continua em Serviços, no
+  // formulário do serviço; os outros logins abrem o My Pet.
+  bool _loginParaAgendar = false;
+
+  @override
+  void initState() {
+    super.initState();
+    sessao.addListener(_aoMudarSessao);
+  }
+
+  @override
+  void dispose() {
+    sessao.removeListener(_aoMudarSessao);
+    super.dispose();
+  }
+
+  void _aoMudarSessao() {
+    setState(() {
+      if (sessao.logado && !_logado && !_loginParaAgendar) {
+        currentIndex = _indiceMyPet;
+      }
+      if (!sessao.logado && currentIndex == _indiceMyPet) currentIndex = 0;
+      _logado = sessao.logado;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: IndexedStack(
         index: currentIndex,
-        children: pages,
+        children: [
+          HomePage(onIrParaServicos: () => setState(() => currentIndex = 1)),
+          ServicesPage(loginParaAgendar: (ativo) => _loginParaAgendar = ativo),
+          const TestimonialsPage(),
+          const ContactPage(),
+          if (_logado) const MyPetPage(),
+        ],
       ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: currentIndex,
@@ -60,27 +101,33 @@ class _MainNavigationState extends State<MainNavigation> {
             currentIndex = index;
           });
         },
-        destinations: const [
-          NavigationDestination(
+        destinations: [
+          const NavigationDestination(
             icon: Icon(Icons.home_outlined),
             selectedIcon: Icon(Icons.home),
             label: 'Home',
           ),
-          NavigationDestination(
+          const NavigationDestination(
             icon: Icon(Icons.calendar_month_outlined),
             selectedIcon: Icon(Icons.calendar_month),
             label: 'Serviços',
           ),
-          NavigationDestination(
+          const NavigationDestination(
             icon: Icon(Icons.chat_bubble_outline),
             selectedIcon: Icon(Icons.chat_bubble),
             label: 'Depoimentos',
           ),
-          NavigationDestination(
+          const NavigationDestination(
             icon: Icon(Icons.mail_outline),
             selectedIcon: Icon(Icons.mail),
             label: 'Contato',
           ),
+          if (_logado)
+            const NavigationDestination(
+              icon: Icon(Icons.pets_outlined),
+              selectedIcon: Icon(Icons.pets),
+              label: 'My Pet',
+            ),
         ],
       ),
     );

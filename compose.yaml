@@ -10,20 +10,17 @@ services:
     image: mysql:8.4
     restart: unless-stopped
 
-    # Publica a porta do MySQL para o Windows.
-    # Assim o Dart rodando fora do Docker consegue acessar 127.0.0.1:3306.
+    # Só loopback: deixa o Dart rodando fora do Docker acessar 127.0.0.1:3306
+    # sem expor o MySQL para a rede.
     ports:
-      - "3306:3306"
-
+      - "127.0.0.1:3306:3306"
     environment:
       MYSQL_DATABASE: auventura
       MYSQL_USER: auventura
       MYSQL_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in .env}
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?Set MYSQL_ROOT_PASSWORD in .env}
-
     volumes:
       - mysql_data:/var/lib/mysql
-
     healthcheck:
       test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u root -p\"$${MYSQL_ROOT_PASSWORD}\" --silent"]
       interval: 5s
@@ -31,12 +28,12 @@ services:
       retries: 20
       start_period: 30s
 
+  # Mantém o nome barramento-service para os demais serviços continuarem
+  # usando BARRAMENTO_URL sem mudança.
   barramento-service:
-    image: auventura/backend:local
+    image: auventura/barramento-dart:local
     build:
-      context: ./back
-      dockerfile: Dockerfile
-    command: ["node", "services/barramento-service/index.js"]
+      context: ./back/services/barramento-service-dart
     restart: unless-stopped
     environment:
       BARRAMENTO_PORT: "10000"
@@ -45,7 +42,7 @@ services:
       notificacoes-service:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "node", "-e", "require('http').get('http://127.0.0.1:10000/health', r => process.exit(r.statusCode === 200 ? 0 : 1)).on('error', () => process.exit(1))"]
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:10000/health"]
       interval: 5s
       timeout: 3s
       retries: 12
