@@ -2,8 +2,14 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
+import 'package:flutter/foundation.dart';
+
 import '../models/agendamento.dart';
 import 'api_client.dart';
+
+// Sobe a cada agendamento criado. O My Pet recarrega a lista e a navegação
+// leva o tutor para lá.
+final ValueNotifier<int> agendamentoCriado = ValueNotifier<int>(0);
 
 Future<List<Agendamento>> apiGetAgendamentos(String token) async {
   final corpo = await apiRequest(
@@ -56,7 +62,9 @@ Future<Agendamento> apiCreateAgendamento(
     throw ApiException('Resposta inválida do servidor ao criar agendamento.');
   }
 
-  return Agendamento.fromJson(corpo);
+  final criado = Agendamento.fromJson(corpo);
+  agendamentoCriado.value++;
+  return criado;
 }
 
 Future<List<String>> apiGetHorariosOcupados({

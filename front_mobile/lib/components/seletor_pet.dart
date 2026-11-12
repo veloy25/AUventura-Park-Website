@@ -28,7 +28,7 @@ class SeletorPet extends StatelessWidget {
   final String? erro;
 
   Future<void> _cadastrar(BuildContext context) async {
-    final novoPet = await ModalCadastrarPet.abrir(context);
+    final novoPet = await ModalCadastrarPet.abrir(context, pets: pets);
     if (novoPet == null || !context.mounted) return;
     onCadastrado(novoPet);
     ScaffoldMessenger.of(context).showSnackBar(

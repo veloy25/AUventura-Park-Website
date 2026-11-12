@@ -184,7 +184,8 @@ class _DaycarePageState extends State<DaycarePage> {
       setState(
         () => _sucesso = 'Agendamento de Daycare criado com sucesso! 🎉',
       );
-      // Volta para a aba Serviços, como o site faz depois de 2 segundos.
+      // Fecha o formulário depois de 2 segundos; a navegação já foi para o
+      // My Pet (ver main.dart).
       _voltarAposSucesso = Timer(const Duration(seconds: 2), () {
         if (mounted) Navigator.of(context).popUntil((rota) => rota.isFirst);
       });

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
@@ -6,6 +8,8 @@ import 'pages/services_page.dart';
 import 'pages/testimonials_page.dart';
 import 'pages/contact_page.dart';
 import 'pages/my_pet_page.dart';
+import 'services/agendamentos_service.dart';
+import 'services/notificacoes_service.dart';
 import 'services/sessao.dart';
 
 Future<void> main() async {
@@ -59,16 +63,41 @@ class _MainNavigationState extends State<MainNavigation> {
   // formulário do serviço; os outros logins abrem o My Pet.
   bool _loginParaAgendar = false;
 
+  // O selo do sino não recebe push: consulta o back de tempos em tempos.
+  Timer? _relogioNaoLidas;
+  Timer? _contagemAposAgendar;
+
   @override
   void initState() {
     super.initState();
     sessao.addListener(_aoMudarSessao);
+    agendamentoCriado.addListener(_irParaMyPet);
+    _relogioNaoLidas = Timer.periodic(
+      const Duration(seconds: 10),
+      (_) => atualizarNaoLidas(),
+    );
+    atualizarNaoLidas();
   }
 
   @override
   void dispose() {
     sessao.removeListener(_aoMudarSessao);
+    agendamentoCriado.removeListener(_irParaMyPet);
+    _relogioNaoLidas?.cancel();
+    _contagemAposAgendar?.cancel();
     super.dispose();
+  }
+
+  // Os agendamentos moram no My Pet: quem acabou de agendar vai para lá.
+  void _irParaMyPet() {
+    if (_logado) setState(() => currentIndex = _indiceMyPet);
+
+    // A notificação nasce no barramento um instante depois do agendamento.
+    _contagemAposAgendar?.cancel();
+    _contagemAposAgendar = Timer(
+      const Duration(seconds: 1),
+      atualizarNaoLidas,
+    );
   }
 
   void _aoMudarSessao() {
@@ -79,6 +108,7 @@ class _MainNavigationState extends State<MainNavigation> {
       if (!sessao.logado && currentIndex == _indiceMyPet) currentIndex = 0;
       _logado = sessao.logado;
     });
+    atualizarNaoLidas();
   }
 
   @override

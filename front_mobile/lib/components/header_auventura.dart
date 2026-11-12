@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../pages/login_page.dart';
 import '../pages/notificacoes_page.dart';
+import '../services/notificacoes_service.dart';
 import '../services/sessao.dart';
 import '../theme/cores.dart';
 
@@ -75,13 +76,23 @@ class HeaderAuventura extends StatelessWidget implements PreferredSizeWidget {
             return IconButton(
               tooltip: 'Notificações',
               color: Cores.forest,
-              icon: const Icon(Icons.notifications_none),
-              onPressed: () {
-                Navigator.of(context).push(
+              icon: ValueListenableBuilder<int>(
+                valueListenable: naoLidas,
+                builder: (_, total, _) => Badge(
+                  isLabelVisible: total > 0,
+                  label: Text('$total'),
+                  backgroundColor: Cores.bark,
+                  child: const Icon(Icons.notifications_none),
+                ),
+              ),
+              onPressed: () async {
+                await Navigator.of(context).push(
                   MaterialPageRoute<void>(
                     builder: (_) => NotificacoesPage(token: token),
                   ),
                 );
+                // Ler ou excluir lá dentro muda o contador.
+                await atualizarNaoLidas();
               },
             );
           },

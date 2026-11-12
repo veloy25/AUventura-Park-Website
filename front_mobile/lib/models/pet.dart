@@ -63,6 +63,11 @@ class Pet {
   }
 }
 
+// O back liga agendamento e pet só pelo nome, e só dentro dos dados do tutor
+// logado. Por isso o nome, sem maiúsculas e sem espaços nas pontas, é o que
+// identifica o pet.
+String normalizarNomePet(String nome) => nome.trim().toLowerCase();
+
 // Listas usadas no cadastro de pet (as mesmas do site).
 const racasPopulares = <String>[
   'Akita',

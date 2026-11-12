@@ -20,16 +20,19 @@ String? _validarPeso(String texto) {
 }
 
 // Cadastro de pet que sobe de baixo da tela. Devolve o pet criado, ou nulo
-// se o tutor fechar sem salvar.
+// se o tutor fechar sem salvar. [pets] são os que o tutor já tem: o nome
+// identifica o pet nos agendamentos, então não pode se repetir.
 class ModalCadastrarPet extends StatefulWidget {
-  const ModalCadastrarPet({super.key});
+  const ModalCadastrarPet({super.key, this.pets = const []});
 
-  static Future<Pet?> abrir(BuildContext context) {
+  final List<Pet> pets;
+
+  static Future<Pet?> abrir(BuildContext context, {List<Pet> pets = const []}) {
     return showModalBottomSheet<Pet>(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => const ModalCadastrarPet(),
+      builder: (context) => ModalCadastrarPet(pets: pets),
     );
   }
 
@@ -69,6 +72,13 @@ class _ModalCadastrarPetState extends State<ModalCadastrarPet> {
                 .take(6)
                 .toList();
     });
+  }
+
+  String? _validarNome(String texto) {
+    final repetido = widget.pets.any(
+      (pet) => normalizarNomePet(pet.nome) == normalizarNomePet(texto),
+    );
+    return repetido ? 'Você já tem um pet com esse nome' : null;
   }
 
   void _escolherRaca(String raca) {
@@ -168,6 +178,7 @@ class _ModalCadastrarPetState extends State<ModalCadastrarPet> {
                 rotulo: 'Nome do pet',
                 dica: 'Ex: Thor',
                 limite: 100,
+                validar: _validarNome,
               ),
               Row(
                 children: [

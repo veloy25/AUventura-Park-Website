@@ -7,6 +7,24 @@ const { authenticate, verifyToken } = require("../../shared/auth");
 const app = express();
 const PORT = process.env.NOTIFICACOES_SERVICE_PORT || 3007;
 
+// Os eventos trazem os ids; a mensagem ao tutor usa os nomes legíveis.
+const NOMES_SERVICO = {
+  banho: "Banho",
+  tosa: "Tosa",
+  banho_tosa: "Banho e Tosa",
+  adestramento: "Adestramento",
+  daycare: "Daycare",
+};
+const NOMES_PLANO = {
+  dayuse: "Dia Teste / Avulso",
+  mensal: "Mensal",
+  trimestral: "Trimestral",
+  semestral: "Semestral",
+  anual: "Anual",
+};
+// "2026-11-18" (ou "2026-11-18T00:00:00.000Z") vira "18/11/2026".
+const dataBr = (data) => String(data).slice(0, 10).split("-").reverse().join("/");
+
 app.use(cors());
 app.use(express.json());
 
@@ -28,7 +46,7 @@ app.post("/eventos", async (req, res) => {
         [
           user_id,
           "Agendamento confirmado!",
-          `Seu agendamento de ${servico} para ${nomeCachorro} no dia ${data} as ${horario} foi confirmado.`,
+          `Seu agendamento de ${NOMES_SERVICO[servico] || servico} para ${nomeCachorro} no dia ${dataBr(data)} às ${horario} foi confirmado.`,
           "agendamento",
         ]
       );
@@ -64,7 +82,7 @@ app.post("/eventos", async (req, res) => {
         [
           userId,
           "Daycare confirmado!",
-          `Sua vaga no Daycare foi confirmada! Plano: ${plano}.`,
+          `Sua vaga no Daycare foi confirmada! Plano: ${NOMES_PLANO[plano] || plano}.`,
           "daycare",
         ]
       );

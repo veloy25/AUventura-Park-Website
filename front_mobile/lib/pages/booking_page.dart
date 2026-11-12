@@ -137,7 +137,7 @@ class _BookingPageState extends State<BookingPage> {
       );
       if (!mounted) return;
       setState(() => _sucesso = 'Agendamento criado com sucesso!');
-      // Volta para a aba Serviços, que recarrega "Meus Agendamentos".
+      // Fecha o formulário; a navegação já foi para o My Pet (ver main.dart).
       _voltarAposSucesso = Timer(const Duration(milliseconds: 1400), () {
         if (mounted) Navigator.of(context).popUntil((rota) => rota.isFirst);
       });

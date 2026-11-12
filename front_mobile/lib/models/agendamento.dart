@@ -1,3 +1,5 @@
+import 'pet.dart';
+
 class Agendamento {
   const Agendamento({
     required this.id,
@@ -59,6 +61,24 @@ class Agendamento {
     return DateTime.tryParse(texto.endsWith('Z') ? texto : '${texto}Z')?.toLocal();
   }
 
+  bool ehDoPet(String nomePet) =>
+      normalizarNomePet(nomeCachorro) == normalizarNomePet(nomePet);
+
+  // Data com o horário HH:mm de início. Nulo se a data vier inválida; um
+  // horário fora do padrão conta como início do dia.
+  DateTime? get inicio {
+    final dia = DateTime.tryParse(data);
+    if (dia == null) return null;
+    final hora = RegExp(r'^(\d{1,2}):(\d{2})').firstMatch(horario.trim());
+    return DateTime(
+      dia.year,
+      dia.month,
+      dia.day,
+      int.tryParse(hora?.group(1) ?? '') ?? 0,
+      int.tryParse(hora?.group(2) ?? '') ?? 0,
+    );
+  }
+
   String get servicoFormatado {
     switch (servico.toLowerCase()) {
       case 'banho':
@@ -86,4 +106,29 @@ class Agendamento {
     } catch (_) {}
     return data;
   }
+}
+
+// Agendamentos de um pet: os que ainda vão acontecer (do mais próximo ao mais
+// distante) e o histórico (do mais recente ao mais antigo).
+({List<Agendamento> proximos, List<Agendamento> historico}) separarAgendamentos(
+  Iterable<Agendamento> todos,
+  String nomePet, {
+  required DateTime agora,
+}) {
+  final doPet = todos.where((a) => a.ehDoPet(nomePet));
+  final proximos = <Agendamento>[];
+  final historico = <Agendamento>[];
+  for (final agendamento in doPet) {
+    final inicio = agendamento.inicio;
+    (inicio != null && inicio.isAfter(agora) ? proximos : historico).add(
+      agendamento,
+    );
+  }
+
+  final semData = DateTime.fromMillisecondsSinceEpoch(0);
+  int porInicio(Agendamento a, Agendamento b) =>
+      (a.inicio ?? semData).compareTo(b.inicio ?? semData);
+  proximos.sort(porInicio);
+  historico.sort((a, b) => porInicio(b, a));
+  return (proximos: proximos, historico: historico);
 }
