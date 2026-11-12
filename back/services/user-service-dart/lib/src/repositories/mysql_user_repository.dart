@@ -1,5 +1,7 @@
+import 'package:mysql_dart/exception.dart';
 import 'package:mysql_dart/mysql_dart.dart';
 
+import '../core/erros.dart';
 import '../models/user.dart';
 import 'user_repository.dart';
 
@@ -11,8 +13,7 @@ class MySqlUserRepository implements UserRepository {
   final MySQLConnectionPool _pool;
 
   // Centraliza as colunas utilizadas nas consultas de usuário.
-  static const String _colunas =
-      'id, nome, email, password_hash, criado_em';
+  static const String _colunas = 'id, nome, email, password_hash, criado_em';
 
   // Converte uma linha retornada pelo MySQL em um objeto User.
   User _mapear(ResultSetRow linha) {
@@ -23,9 +24,7 @@ class MySqlUserRepository implements UserRepository {
       nome: dados['nome']!,
       email: dados['email']!,
       passwordHash: dados['password_hash']!,
-      criadoEm: DateTime.tryParse(
-        dados['criado_em'] ?? '',
-      ),
+      criadoEm: DateTime.tryParse(dados['criado_em'] ?? ''),
     );
   }
 
@@ -36,18 +35,14 @@ class MySqlUserRepository implements UserRepository {
       'SELECT $_colunas '
       'FROM users '
       'WHERE id = :id',
-      {
-        'id': id,
-      },
+      {'id': id},
     );
 
     if (resultado.rows.isEmpty) {
       return null;
     }
 
-    return _mapear(
-      resultado.rows.first,
-    );
+    return _mapear(resultado.rows.first);
   }
 
   // Busca um usuário através do e-mail.
@@ -57,33 +52,39 @@ class MySqlUserRepository implements UserRepository {
       'SELECT $_colunas '
       'FROM users '
       'WHERE email = :email',
-      {
-        'email': email,
-      },
+      {'email': email},
     );
 
     if (resultado.rows.isEmpty) {
       return null;
     }
 
-    return _mapear(
-      resultado.rows.first,
-    );
+    return _mapear(resultado.rows.first);
   }
 
   // Insere um novo usuário e retorna o registro criado pelo banco.
   @override
   Future<User> inserir(User user) async {
-    final resultado = await _pool.execute(
-      'INSERT INTO users '
-      '(nome, email, password_hash) '
-      'VALUES (:nome, :email, :passwordHash)',
-      {
-        'nome': user.nome,
-        'email': user.email,
-        'passwordHash': user.passwordHash,
-      },
-    );
+    final IResultSet resultado;
+    try {
+      resultado = await _pool.execute(
+        'INSERT INTO users '
+        '(nome, email, password_hash) '
+        'VALUES (:nome, :email, :passwordHash)',
+        {
+          'nome': user.nome,
+          'email': user.email,
+          'passwordHash': user.passwordHash,
+        },
+      );
+    } on MySQLServerException catch (erro) {
+      // 1062 = chave duplicada. Pega o caso de dois cadastros simultâneos com
+      // o mesmo e-mail que passaram juntos pela verificação do serviço.
+      if (erro.errorCode == 1062) {
+        throw const Conflito('Este e-mail ja esta em uso.');
+      }
+      rethrow;
+    }
 
     final novoId = resultado.lastInsertID.toInt();
 

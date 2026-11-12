@@ -104,6 +104,9 @@ Recebe eventos via `POST /eventos` e os encaminha para os serviços assinantes p
 
 No Docker Compose, o `barramento-service` roda a versão em Dart (`services/barramento-service-dart`, com `shelf`), que tem o mesmo contrato (`POST /eventos`, `GET /health`) e a mesma porta. Além disso, guarda em memória os últimos 1000 eventos e os expõe em `GET /eventos` (filtro opcional `?tipo=`), para um serviço que ficou fora do ar recuperar o que perdeu; o histórico some se o barramento reiniciar. A versão Node continua no repositório e é a que o Kubernetes usa. Para testar a versão Dart: `cd back/services/barramento-service-dart && dart pub get && dart test` (exige Dart 3.13.5 ou superior).
 
+### User Service (Dart)
+No Docker Compose, o `user-service` também roda em Dart (`services/user-service-dart`), com o mesmo contrato do Node (`/signup`, `/login`, `/me`) e as mesmas claims no JWT, então os demais serviços continuam validando o token com o mesmo `JWT_SECRET`. Veja o README da pasta para a estrutura em camadas e como rodar.
+
 ## Barramento de Eventos
 
 O barramento de eventos foi implementado de forma manual no `barramento-service`, seguindo a proposta da disciplina.

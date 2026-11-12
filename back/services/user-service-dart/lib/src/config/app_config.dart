@@ -44,64 +44,32 @@ class AppConfig {
   // Também valida valores importantes antes do serviço iniciar.
   factory AppConfig.fromEnv() {
     final config = AppConfig(
-      appEnv: Env.opcional(
-        'APP_ENV',
-        'development',
-      ),
+      appEnv: Env.opcional('APP_ENV', 'development'),
 
-      serverPort: Env.inteiro(
-        'SERVER_PORT',
-        3001,
-      ),
+      serverPort: Env.inteiro('SERVER_PORT', 3001),
 
-      logLevel: Env.opcional(
-        'LOG_LEVEL',
-        'info',
-      ),
+      logLevel: Env.opcional('LOG_LEVEL', 'info'),
 
-      dbHost: Env.obrigatoria(
-        'DB_HOST',
-      ),
+      dbHost: Env.obrigatoria('DB_HOST'),
 
-      dbPort: Env.inteiro(
-        'DB_PORT',
-        3306,
-      ),
+      dbPort: Env.inteiro('DB_PORT', 3306),
 
-      dbName: Env.obrigatoria(
-        'DB_NAME',
-      ),
+      dbName: Env.obrigatoria('DB_NAME'),
 
-      dbUser: Env.obrigatoria(
-        'DB_USER',
-      ),
+      dbUser: Env.obrigatoria('DB_USER'),
 
-      dbPassword: Env.obrigatoria(
-        'DB_PASSWORD',
-      ),
+      dbPassword: Env.obrigatoria('DB_PASSWORD'),
 
-      dbPoolSize: Env.inteiro(
-        'DB_POOL_SIZE',
-        10,
-      ),
+      dbPoolSize: Env.inteiro('DB_POOL_SIZE', 10),
 
-      jwtSecret: Env.obrigatoria(
-        'JWT_SECRET',
-      ),
+      jwtSecret: Env.obrigatoria('JWT_SECRET'),
 
-      jwtExpirationHours: Env.inteiro(
-        'JWT_EXPIRATION_HOURS',
-        2,
-      ),
+      jwtExpirationHours: Env.inteiro('JWT_EXPIRATION_HOURS', 2),
 
-      barramentoUrl: Env.opcional(
-        'BARRAMENTO_URL',
-        'http://localhost:10000',
-      ),
+      barramentoUrl: Env.opcional('BARRAMENTO_URL', 'http://localhost:10000'),
     );
 
-    if (config.serverPort < 1 ||
-        config.serverPort > 65535) {
+    if (config.serverPort < 1 || config.serverPort > 65535) {
       throw StateError(
         'SERVER_PORT fora da faixa válida: '
         '${config.serverPort}',
@@ -109,9 +77,7 @@ class AppConfig {
     }
 
     if (config.dbPoolSize < 1) {
-      throw StateError(
-        'DB_POOL_SIZE deve ser pelo menos 1.',
-      );
+      throw StateError('DB_POOL_SIZE deve ser pelo menos 1.');
     }
 
     return config;

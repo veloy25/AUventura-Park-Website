@@ -1,5 +1,5 @@
 name: user_service_dart
-description: A sample command-line application.
+description: Cadastro, login e perfil de usuarios do AUventura Park.
 version: 1.0.0
 # repository: https://github.com/my_org/my_repo
 

@@ -4,9 +4,7 @@ import 'app_config.dart';
 
 // Cria e gerencia o pool de conexões com o MySQL.
 // Reutiliza conexões para evitar abrir uma nova a cada requisição.
-MySQLConnectionPool criarPool(
-  AppConfig config,
-) {
+MySQLConnectionPool criarPool(AppConfig config) {
   return MySQLConnectionPool(
     host: config.dbHost,
     port: config.dbPort,
@@ -28,20 +26,12 @@ MySQLConnectionPool criarPool(
 Future<void> aguardarBanco(
   MySQLConnectionPool pool, {
   int tentativas = 30,
-  Duration intervalo = const Duration(
-    seconds: 2,
-  ),
+  Duration intervalo = const Duration(seconds: 2),
 }) async {
-  for (
-    var tentativa = 1;
-    tentativa <= tentativas;
-    tentativa++
-  ) {
+  for (var tentativa = 1; tentativa <= tentativas; tentativa++) {
     try {
       // Consulta simples para verificar se o banco responde.
-      await pool.execute(
-        'SELECT 1',
-      );
+      await pool.execute('SELECT 1');
 
       return;
     } catch (_) {
@@ -49,9 +39,7 @@ Future<void> aguardarBanco(
         rethrow;
       }
 
-      await Future<void>.delayed(
-        intervalo,
-      );
+      await Future<void>.delayed(intervalo);
     }
   }
 }

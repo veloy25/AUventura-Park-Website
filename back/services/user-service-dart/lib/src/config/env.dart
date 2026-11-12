@@ -5,8 +5,7 @@ import 'package:dotenv/dotenv.dart';
 class Env {
   Env._();
 
-  static final DotEnv _env =
-      DotEnv(includePlatformEnvironment: true)..load();
+  static final DotEnv _env = DotEnv(includePlatformEnvironment: true)..load();
 
   // Lê uma variável obrigatória.
   // Se não existir ou estiver vazia, interrompe a inicialização.
@@ -14,9 +13,7 @@ class Env {
     final valor = _env[chave];
 
     if (valor == null || valor.trim().isEmpty) {
-      throw StateError(
-        'Variável de ambiente obrigatória ausente: $chave',
-      );
+      throw StateError('Variável de ambiente obrigatória ausente: $chave');
     }
 
     return valor.trim();
@@ -24,23 +21,15 @@ class Env {
 
   // Lê uma variável opcional.
   // Caso não exista, utiliza o valor padrão informado.
-  static String opcional(
-    String chave,
-    String padrao,
-  ) {
+  static String opcional(String chave, String padrao) {
     final valor = _env[chave];
 
-    return (valor == null || valor.trim().isEmpty)
-        ? padrao
-        : valor.trim();
+    return (valor == null || valor.trim().isEmpty) ? padrao : valor.trim();
   }
 
   // Lê uma variável inteira.
   // Caso não exista, utiliza o valor padrão informado.
-  static int inteiro(
-    String chave,
-    int padrao,
-  ) {
+  static int inteiro(String chave, int padrao) {
     final bruto = _env[chave];
 
     if (bruto == null || bruto.trim().isEmpty) {

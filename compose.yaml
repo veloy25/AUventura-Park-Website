@@ -5,6 +5,24 @@ x-backend-healthcheck: &backend-healthcheck
   retries: 20
   start_period: 10s
 
+# Compartilhados pelos serviços Node. Ficam aqui (e não dentro de um serviço)
+# para continuarem valendo mesmo que o user-service troque de implementação.
+x-backend-environment: &backend-environment
+  DB_HOST: db
+  DB_PORT: "3306"
+  DB_NAME: auventura
+  DB_USER: auventura
+  DB_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in .env}
+  JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET in .env}
+  JWT_EXPIRATION: 2h
+  BARRAMENTO_URL: http://barramento-service:10000
+
+x-backend-dependencies: &backend-dependencies
+  db:
+    condition: service_healthy
+  barramento-service:
+    condition: service_healthy
+
 services:
   db:
     image: mysql:8.4
@@ -48,29 +66,32 @@ services:
       retries: 12
       start_period: 5s
 
+  # Versão Dart (back/services/user-service-dart). Não cria tabelas: quem cria
+  # é o initializeDatabase dos serviços Node. Como o barramento só fica healthy
+  # depois do notificacoes-service, a tabela users já existe quando este sobe.
   user-service:
-    image: auventura/backend:local
+    image: auventura/user-service-dart:local
     build:
-      context: ./back
-      dockerfile: Dockerfile
-    command: ["node", "services/user-service/index.js"]
+      context: ./back/services/user-service-dart
     restart: unless-stopped
-    environment: &backend-environment
+    environment:
+      APP_ENV: production
+      SERVER_PORT: "3001"
       DB_HOST: db
       DB_PORT: "3306"
       DB_NAME: auventura
       DB_USER: auventura
       DB_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in .env}
       JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET in .env}
-      JWT_EXPIRATION: 2h
+      JWT_EXPIRATION_HOURS: "2"
       BARRAMENTO_URL: http://barramento-service:10000
-      USER_SERVICE_PORT: "3001"
-    depends_on: &backend-dependencies
-      db:
-        condition: service_healthy
-      barramento-service:
-        condition: service_healthy
-    healthcheck: *backend-healthcheck
+    depends_on: *backend-dependencies
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:3001/health/ready"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 10s
 
   depoimentos-service:
     image: auventura/backend:local
