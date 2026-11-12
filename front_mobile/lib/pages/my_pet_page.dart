@@ -378,6 +378,7 @@ class _MyPetPageState extends State<MyPetPage> {
           ),
         ] else if (_pets.isEmpty) ...[
           Container(
+            width: double.infinity,
             padding: const EdgeInsets.all(22),
             decoration: BoxDecoration(
               color: Colors.white,

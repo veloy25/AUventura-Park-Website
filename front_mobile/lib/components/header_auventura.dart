@@ -106,7 +106,6 @@ class HeaderAuventura extends StatelessWidget implements PreferredSizeWidget {
   }
 }
 
-// O bonequinho: deslogado oferece "Login"; logado mostra o nome e "Sair".
 class _MenuUsuario extends StatelessWidget {
   const _MenuUsuario();
 

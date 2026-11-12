@@ -17,8 +17,7 @@ import '../services/pets_service.dart';
 import '../services/sessao.dart';
 import '../theme/cores.dart';
 
-// Agendamento de banho, tosa, banho e tosa ou adestramento: pet, data,
-// horário livre e observações. O Daycare tem a tela dele (daycare_page.dart).
+// O Daycare tem a tela dele (daycare_page.dart).
 class BookingPage extends StatefulWidget {
   const BookingPage({super.key, required this.servico});
 
@@ -137,7 +136,7 @@ class _BookingPageState extends State<BookingPage> {
       );
       if (!mounted) return;
       setState(() => _sucesso = 'Agendamento criado com sucesso!');
-      // Fecha o formulário; a navegação já foi para o My Pet (ver main.dart).
+      // A navegação já foi para o My Pet; aqui só fecha o formulário.
       _voltarAposSucesso = Timer(const Duration(milliseconds: 1400), () {
         if (mounted) Navigator.of(context).popUntil((rota) => rota.isFirst);
       });

@@ -9,10 +9,8 @@ import 'booking_page.dart';
 import 'daycare_page.dart';
 import 'login_page.dart';
 
-// Abre o formulário certo para o serviço: o do Daycare ou o de horário.
-// Sem login, passa antes pela tela de login e, como no site, segue direto
-// para o formulário. loginParaAgendar avisa a navegação para não pular para
-// o My Pet nesse login (ver main.dart).
+// Sem login, passa antes pela tela de login e segue para o formulário, como
+// no site. loginParaAgendar impede a navegação de pular para o My Pet.
 Future<void> abrirAgendamento(
   BuildContext context,
   ServicoInfo servico, {

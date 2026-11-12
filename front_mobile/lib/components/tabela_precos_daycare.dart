@@ -4,7 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../models/daycare.dart';
 import '../theme/cores.dart';
 
-// A mesma tabela do modal do site. No celular ela rola para o lado.
+// No celular a tabela rola para o lado.
 class TabelaPrecosDaycare extends StatelessWidget {
   const TabelaPrecosDaycare({super.key});
 

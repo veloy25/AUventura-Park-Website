@@ -4,7 +4,6 @@ import 'package:google_fonts/google_fonts.dart';
 import '../models/pet.dart';
 import '../theme/cores.dart';
 
-// Idade, peso e vacinas do pet. Usado no card do My Pet e no detalhe do pet.
 class InfoPet extends StatelessWidget {
   const InfoPet({super.key, required this.pet});
 

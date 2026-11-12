@@ -29,7 +29,6 @@ class AuventuraApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'AUventura Park',
-      // Calendário e textos padrão do Flutter em português.
       locale: const Locale('pt', 'BR'),
       supportedLocales: const [Locale('pt', 'BR')],
       localizationsDelegates: GlobalMaterialLocalizations.delegates,
@@ -59,8 +58,7 @@ class _MainNavigationState extends State<MainNavigation> {
   int currentIndex = 0;
   late bool _logado = sessao.logado;
 
-  // Como no site: quem faz login pelo "Agendar" continua em Serviços, no
-  // formulário do serviço; os outros logins abrem o My Pet.
+  // O login pelo "Agendar" volta ao formulário; os outros abrem o My Pet.
   bool _loginParaAgendar = false;
 
   // O selo do sino não recebe push: consulta o back de tempos em tempos.

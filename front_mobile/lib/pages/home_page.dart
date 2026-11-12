@@ -407,6 +407,13 @@ class HomePage extends StatelessWidget {
               width: double.infinity,
               height: 220,
               fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) => Container(
+                width: double.infinity,
+                height: 220,
+                color: Cores.sand,
+                alignment: Alignment.center,
+                child: const Text('🐾', style: TextStyle(fontSize: 48)),
+              ),
             ),
           ),
         ],

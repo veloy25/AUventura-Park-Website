@@ -24,8 +24,7 @@ class ApiException implements Exception {
   String toString() => mensagem;
 }
 
-// Faz a chamada e devolve o JSON já decodificado. Qualquer falha vira
-// ApiException com uma mensagem que a tela pode mostrar ao usuário.
+// Qualquer falha vira ApiException, com mensagem que a tela pode mostrar.
 Future<dynamic> apiRequest(
   Future<http.Response> Function() chamada,
   String erroPadrao,

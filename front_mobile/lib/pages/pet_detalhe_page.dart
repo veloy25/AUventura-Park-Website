@@ -12,8 +12,7 @@ import '../services/api_client.dart';
 import '../services/sessao.dart';
 import '../theme/cores.dart';
 
-// Um pet do My Pet: os dados dele e os agendamentos, divididos em próximos e
-// histórico. Só leitura: o cadastro do pet não é editável.
+// Só leitura: o cadastro do pet não é editável.
 class PetDetalhePage extends StatefulWidget {
   const PetDetalhePage({super.key, required this.pet});
 

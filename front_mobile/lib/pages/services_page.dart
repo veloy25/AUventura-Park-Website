@@ -7,8 +7,7 @@ import '../models/servico_info.dart';
 import '../theme/cores.dart';
 import 'service_details_page.dart';
 
-// Aba Serviços: o catálogo. O detalhe do serviço e os formulários abrem por
-// cima, como o login. Os agendamentos do tutor ficam no My Pet.
+// Os agendamentos do tutor ficam no My Pet.
 class ServicesPage extends StatelessWidget {
   const ServicesPage({super.key, this.loginParaAgendar});
 

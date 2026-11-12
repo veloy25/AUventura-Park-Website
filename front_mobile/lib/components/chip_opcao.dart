@@ -3,8 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../theme/cores.dart';
 
-// Opção de escolha única dos formulários (pet, plano, frequência, dia da
-// semana). Sem onTap ela aparece desabilitada.
+// Sem onTap aparece desabilitada.
 class ChipOpcao extends StatelessWidget {
   const ChipOpcao({
     super.key,

@@ -7,8 +7,6 @@ import '../models/usuario.dart';
 import 'api_client.dart';
 import 'auth_service.dart';
 
-// Estado de login do app. As telas escutam com ListenableBuilder ou
-// addListener e se redesenham quando alguém entra ou sai.
 class Sessao extends ChangeNotifier {
   static const _chaveToken = 'authToken';
   static const _chaveUsuario = 'authUser';

@@ -78,7 +78,6 @@ void main() {
   });
 
   group('separarAgendamentos', () {
-    // Quinta-feira, 12/11/2026, 10:00.
     final agora = DateTime(2026, 11, 12, 10);
 
     Agendamento ag(int id, String data, String horario, {String pet = 'Thor'}) {

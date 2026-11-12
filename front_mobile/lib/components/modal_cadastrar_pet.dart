@@ -19,9 +19,8 @@ String? _validarPeso(String texto) {
   return peso == null || peso <= 0 ? 'Peso inválido' : null;
 }
 
-// Cadastro de pet que sobe de baixo da tela. Devolve o pet criado, ou nulo
-// se o tutor fechar sem salvar. [pets] são os que o tutor já tem: o nome
-// identifica o pet nos agendamentos, então não pode se repetir.
+// Devolve o pet criado, ou nulo se o tutor fechar sem salvar. O nome não pode
+// repetir entre os [pets] do tutor: ele identifica o pet nos agendamentos.
 class ModalCadastrarPet extends StatefulWidget {
   const ModalCadastrarPet({super.key, this.pets = const []});
 

@@ -13,8 +13,7 @@ String dataIso(DateTime data) =>
 String dataBr(DateTime data) =>
     '${_doisDigitos(data.day)}/${_doisDigitos(data.month)}/${data.year}';
 
-// Campo que abre o calendário. Só deixa escolher de hoje em diante, como o
-// min={hoje} dos inputs de data do site.
+// Só deixa escolher de hoje em diante, como os inputs de data do site.
 class CampoData extends StatelessWidget {
   const CampoData({
     super.key,

@@ -27,7 +27,6 @@ const _thor = {
 
 final _hoje = dataIso(DateTime.now());
 
-// Simula o back: pets, vagas e o POST do agendamento. Guarda o que chegou.
 class _BackFalso {
   _BackFalso({this.vagas, this.respostaAgendar});
 
@@ -55,7 +54,6 @@ class _BackFalso {
       .firstOrNull;
 }
 
-// Abre o Daycare por cima de outra tela, como a aba Serviços faz.
 Future<void> _abrir(WidgetTester tester) async {
   GoogleFonts.config.allowRuntimeFetching = false;
   tester.view.physicalSize = const Size(750, 1624);
@@ -88,7 +86,6 @@ Future<void> _tocar(WidgetTester tester, String texto) async {
   await tester.pumpAndSettle();
 }
 
-// Abre o calendário e confirma o dia que já vem marcado (hoje).
 Future<void> _escolherHoje(WidgetTester tester) async {
   await _tocar(tester, 'Selecionar data');
   await tester.tap(find.text('OK'));

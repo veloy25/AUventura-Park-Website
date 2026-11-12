@@ -17,8 +17,7 @@ class ServicoInfo {
   final String descricao;
   final int duracaoMinutos;
 
-  // O Daycare não tem horário: ele abre o formulário de planos
-  // (pages/daycare_view.dart). Os outros serviços usam os slots abaixo.
+  // O Daycare não tem horário: abre o formulário de planos.
   bool get ehDaycare => id == 'daycare';
 
   List<String> gerarSlots() {

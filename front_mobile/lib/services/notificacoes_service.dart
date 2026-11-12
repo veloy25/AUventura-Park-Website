@@ -5,7 +5,6 @@ import '../models/notificacao.dart';
 import 'api_client.dart';
 import 'sessao.dart';
 
-// Quantas notificações o tutor ainda não leu. O sino do cabeçalho mostra.
 final ValueNotifier<int> naoLidas = ValueNotifier<int>(0);
 
 Future<void> atualizarNaoLidas() async {
