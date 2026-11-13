@@ -1,44 +1,61 @@
 # Kubernetes local
 
-## Preparar as credenciais
+Os manifests desta pasta iniciam o MySQL, o API Gateway e os microsserviços do AUventura Park no namespace `auventura`. O User Service e o barramento usam imagens Dart próprias; os demais serviços de aplicação usam a imagem Node `auventura/backend:local`.
 
-Copie `.env.example` para `.env` nesta pasta e defina `DB_PASSWORD`, `MYSQL_ROOT_PASSWORD` e `JWT_SECRET`. O arquivo `.env` está no `.gitignore`.
+## Requisitos
 
-Depois de criar o namespace, crie o Secret:
+- Um cluster Kubernetes local em execução (por exemplo, o Kubernetes do Docker Desktop).
+- `kubectl` configurado para acessar esse cluster.
+- Docker para construir as imagens.
 
-```sh
+Os manifests usam imagens locais com `imagePullPolicy: Never`, sem registry. O cluster precisa enxergar as imagens construídas; em ambientes que não compartilham o armazenamento de imagens do Docker, importe as imagens para o runtime do cluster.
+
+## 1. Criar as credenciais
+
+Copie o arquivo de exemplo e altere os valores antes de criar o Secret:
+
+```powershell
+Copy-Item .\K8s\.env.example .\K8s\.env
+```
+
+No macOS, Linux ou Git Bash:
+
+```bash
+cp K8s/.env.example K8s/.env
+```
+
+Defina valores próprios para `DB_PASSWORD`, `MYSQL_ROOT_PASSWORD` e `JWT_SECRET`. Não versione nem compartilhe `K8s/.env`.
+
+Crie o namespace e o Secret:
+
+```bash
 kubectl apply -f K8s/namespace.yaml
 kubectl create secret generic auventura-secrets --namespace auventura --from-env-file=K8s/.env
 ```
 
-O Secret precisa existir antes de iniciar o MySQL e os serviços que o utilizam.
+O Secret precisa existir antes de iniciar o banco e os serviços. Se ele já existir e você precisar atualizá-lo:
 
-## Construir a imagem local
-
-O Docker Desktop deste ambiente usa o armazenamento de imagens `containerd`. Na raiz do projeto, construa a imagem antes de aplicar os Deployments:
-
-```sh
-docker build -t auventura/backend:local ./back
+```bash
+kubectl create secret generic auventura-secrets --namespace auventura --from-env-file=K8s/.env --dry-run=client -o yaml | kubectl apply -f -
 ```
 
-O `user-service` e o `barramento-service` são implementados em Dart e têm imagem própria. Construa as duas também:
+## 2. Construir as imagens
 
-```sh
+Execute os comandos na raiz do repositório:
+
+```bash
+docker build -t auventura/backend:local ./back
 docker build -t auventura/user-service-dart:local ./back/services/user-service-dart
 docker build -t auventura/barramento-dart:local ./back/services/barramento-service-dart
 ```
 
-Os Deployments usam imagens `:local` com `imagePullPolicy: Never`, sem registry local. Os demais serviços usam `auventura/backend:local` (Node). Após modificar um serviço, reconstrua a imagem dele e reinicie o Deployment para os Pods usarem a nova versão:
+Reconstrua a imagem correspondente após alterar um serviço. Como as imagens usam a tag `:local` e `imagePullPolicy: Never`, não há busca em registry.
 
-```sh
-kubectl rollout restart deployment/user-service -n auventura
-```
+## 3. Aplicar os manifests
 
-## Aplicar os recursos
+Na raiz do repositório, aplique os recursos nesta ordem:
 
-Na raiz do projeto, aplique os arquivos nesta ordem. Os Services do Kubernetes resolvem as dependências pelo nome; o Deployment reinicia os Pods se uma dependência ainda estiver iniciando.
-
-```sh
+```bash
 kubectl apply -f K8s/mysql.yaml
 kubectl apply -f K8s/notificacoes-service.yaml
 kubectl apply -f K8s/barramento-service.yaml
@@ -51,44 +68,55 @@ kubectl apply -f K8s/contato-service.yaml
 kubectl apply -f K8s/api-gateway.yaml
 ```
 
-Verifique Pods e Services:
+Confira Pods e Services:
 
-```sh
+```bash
 kubectl get pods,services -n auventura
 ```
 
-O Service `api-gateway` usa `LoadBalancer`, que o Docker Desktop publica no host. Confira o endereço e a porta:
+Espere os Pods ficarem prontos. Os probes do User Service verificam `/health/live` e `/health/ready`; o barramento usa `/health`.
 
-```sh
+## 4. Acessar a API
+
+O Service `api-gateway` é do tipo `LoadBalancer`. Em clusters locais como Docker Desktop, normalmente fica disponível em `http://localhost:3000`. Confira o endereço atribuído pelo cluster:
+
+```bash
 kubectl get service api-gateway -n auventura
 ```
 
-Então acesse `http://localhost:3000`. O PVC `mysql-data` mantém os dados do MySQL entre recriações do Pod, desde que o cluster local preserve os volumes.
+O health check do Gateway está em `http://localhost:3000/health`. As rotas da aplicação usam o prefixo `/api/`, por exemplo `POST /api/signup`. Consulte [MICROSERVICES.md](../back/MICROSERVICES.md) para a lista de rotas.
 
+Para conferir a inicialização do User Service:
 
-## Conferir que o Dart está no ar
-
-O `user-service` e o `barramento-service` têm probes de saúde (`/health/live` e `/health/ready` no primeiro, `/health` no segundo). Os Pods só ficam `READY 1/1` depois que respondem:
-
-```sh
-kubectl get pods -n auventura
+```bash
 kubectl logs deployment/user-service -n auventura
 ```
 
-O log do `user-service` mostra `User Service ouvindo em http://localhost:3001`. Para testar de ponta a ponta, cadastre e entre pelo gateway:
+## Atualizar um serviço
 
-```sh
-curl -X POST http://localhost:3000/api/signup -H 'content-type: application/json' -d '{"nome":"Teste","email":"teste@k8s.local","senha":"troque"}'
-curl -X POST http://localhost:3000/api/login -H 'content-type: application/json' -d '{"email":"teste@k8s.local","senha":"troque"}'
+Depois de reconstruir a imagem alterada, reinicie o Deployment correspondente. Por exemplo:
+
+```bash
+docker build -t auventura/user-service-dart:local ./back/services/user-service-dart
+kubectl rollout restart deployment/user-service -n auventura
+kubectl rollout status deployment/user-service -n auventura
 ```
 
-## Kubernetes e Docker Compose na mesma máquina
+Para um serviço Node, reconstrua `auventura/backend:local` e reinicie o Deployment dele.
 
-Os dois publicam o gateway em `localhost:3000`, então só um pode estar de pé por vez. Para voltar ao Compose, zere os Deployments e remova o Service do gateway (o `LoadBalancer` continua ocupando a porta mesmo sem Pods):
+## Alternar entre Kubernetes e Docker Compose
 
-```sh
+Ambos expõem o API Gateway na porta `localhost:3000`; execute um ambiente por vez. Para liberar a porta antes de iniciar o Compose:
+
+```bash
 kubectl scale deployment --all --replicas=0 -n auventura
 kubectl delete service api-gateway -n auventura
 ```
 
-Para voltar ao Kubernetes, pare o Compose (`docker compose stop`) e reaplique os manifests; o `kubectl apply` recria o Service e restaura as réplicas.
+Então inicie o Compose na raiz do projeto:
+
+```bash
+docker compose up -d
+```
+
+Para voltar ao Kubernetes, pare o Compose e reaplique os manifests conforme a ordem indicada acima.
