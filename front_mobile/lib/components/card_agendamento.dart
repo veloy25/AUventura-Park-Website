@@ -68,6 +68,7 @@ class CardAgendamento extends StatelessWidget {
               ),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                constraints: const BoxConstraints(maxWidth: 140),
                 decoration: BoxDecoration(
                   color: Cores.forest.withValues(alpha: 0.08),
                   borderRadius: BorderRadius.circular(20),
@@ -77,6 +78,8 @@ class CardAgendamento extends StatelessWidget {
                 ),
                 child: Text(
                   agendamento.servicoFormatado,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: GoogleFonts.dmSans(
                     fontSize: 12,
                     fontWeight: FontWeight.w700,
@@ -100,12 +103,15 @@ class CardAgendamento extends StatelessWidget {
                       color: Cores.bark,
                     ),
                     const SizedBox(width: 6),
-                    Text(
-                      agendamento.dataFormatada,
-                      style: GoogleFonts.dmSans(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: Cores.forest,
+                    Flexible(
+                      child: Text(
+                        agendamento.dataFormatada,
+                        overflow: TextOverflow.ellipsis,
+                        style: GoogleFonts.dmSans(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: Cores.forest,
+                        ),
                       ),
                     ),
                   ],

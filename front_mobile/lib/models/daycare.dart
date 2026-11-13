@@ -7,7 +7,6 @@ class PlanoDaycare {
   final String id;
   final String label;
 
-  // O avulso é um dia só; os outros repetem toda semana.
   bool get avulso => id == planoAvulso;
 }
 
@@ -104,8 +103,7 @@ const tabelaPrecosDaycare = <LinhaPrecoDaycare>[
   LinhaPrecoDaycare(plano: 'Dia Teste / Avulso', mensal: precoDiaAvulso),
 ];
 
-// Valor que aparece no "Valor estimado" e vai para o back. Nulo enquanto
-// falta escolher o plano ou a frequência.
+// Nulo enquanto falta escolher o plano ou a frequência.
 double? precoDaycare(String? planoId, String? frequencia) {
   if (planoId == planoAvulso) return precoDiaAvulso;
   if (planoId == null || frequencia == null) return null;
@@ -115,14 +113,12 @@ double? precoDaycare(String? planoId, String? frequencia) {
   return null;
 }
 
-// Quantos dias da semana o tutor pode marcar: "3x por semana" libera 3.
 int maxDiasDaFrequencia(String? frequencia) {
   if (frequencia == null) return 0;
   final numero = RegExp(r'^(\d+)').firstMatch(frequencia)?.group(1);
   return numero == null ? 0 : int.parse(numero);
 }
 
-// Resposta de GET /api/daycare/vagas para um dia do plano avulso.
 class VagasDaycare {
   const VagasDaycare({
     required this.ocupados,

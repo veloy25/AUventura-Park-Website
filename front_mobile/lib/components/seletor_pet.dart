@@ -6,9 +6,6 @@ import '../theme/cores.dart';
 import 'chip_opcao.dart';
 import 'modal_cadastrar_pet.dart';
 
-// "Qual pet vai ser atendido?": um chip por pet e o "+ Cadastrar pet", que
-// abre o cadastro sem sair do agendamento. Usado no agendamento comum e no
-// Daycare.
 class SeletorPet extends StatelessWidget {
   const SeletorPet({
     super.key,
@@ -28,7 +25,7 @@ class SeletorPet extends StatelessWidget {
   final String? erro;
 
   Future<void> _cadastrar(BuildContext context) async {
-    final novoPet = await ModalCadastrarPet.abrir(context);
+    final novoPet = await ModalCadastrarPet.abrir(context, pets: pets);
     if (novoPet == null || !context.mounted) return;
     onCadastrado(novoPet);
     ScaffoldMessenger.of(context).showSnackBar(

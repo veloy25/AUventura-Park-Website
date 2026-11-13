@@ -3,9 +3,6 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../theme/cores.dart';
 
-// Barra das telas que abrem por cima das abas (detalhe do serviço e
-// formulários de agendamento), com a seta de voltar. Mesmo visual da barra
-// da tela de login.
 class BarraVoltar extends StatelessWidget implements PreferredSizeWidget {
   const BarraVoltar(this.titulo, {super.key});
 

@@ -1,11 +1,11 @@
 {
-    "name": "front_mobile",
-    "short_name": "front_mobile",
+    "name": "AUventura Park",
+    "short_name": "AUventura",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#FDF8F2",
+    "theme_color": "#2D4A3E",
+    "description": "Creche, banho, tosa e adestramento para o seu cão.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

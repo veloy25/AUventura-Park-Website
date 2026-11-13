@@ -3,8 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../theme/cores.dart';
 
-// Horários do dia separados em manhã e tarde. Os ocupados aparecem riscados
-// e não podem ser escolhidos.
+// Os horários ocupados aparecem riscados e não podem ser escolhidos.
 class SeletorHorario extends StatelessWidget {
   const SeletorHorario({
     super.key,

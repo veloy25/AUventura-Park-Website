@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 import '../models/daycare.dart';
+import 'agendamentos_service.dart';
 import 'api_client.dart';
 
 Future<VagasDaycare> apiVerificarVagas(String token, String data) async {
@@ -53,4 +54,6 @@ Future<void> apiCriarAgendamentoDaycare(
     ),
     'Erro ao criar agendamento.',
   );
+  // Daycare também é um agendamento: leva o tutor ao My Pet, como o banho.
+  agendamentoCriado.value++;
 }

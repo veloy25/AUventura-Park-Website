@@ -20,15 +20,27 @@ spec:
     spec:
       containers:
         - name: barramento-service
-          image: auventura/backend:local
-          imagePullPolicy: Never
 
-          command:
-            - node
-            - services/barramento-service/index.js
+          # Versão em Dart (back/services/barramento-service-dart).
+          image: auventura/barramento-dart:local
+          imagePullPolicy: Never
 
           ports:
             - containerPort: 10000
+
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 10000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 10000
+            initialDelaySeconds: 3
+            periodSeconds: 5
 
           env:
             - name: BARRAMENTO_PORT

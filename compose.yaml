@@ -5,10 +5,33 @@ x-backend-healthcheck: &backend-healthcheck
   retries: 20
   start_period: 10s
 
+# Compartilhados pelos serviços Node. Ficam aqui (e não dentro de um serviço)
+# para continuarem valendo mesmo que o user-service troque de implementação.
+x-backend-environment: &backend-environment
+  DB_HOST: db
+  DB_PORT: "3306"
+  DB_NAME: auventura
+  DB_USER: auventura
+  DB_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in .env}
+  JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET in .env}
+  JWT_EXPIRATION: 2h
+  BARRAMENTO_URL: http://barramento-service:10000
+
+x-backend-dependencies: &backend-dependencies
+  db:
+    condition: service_healthy
+  barramento-service:
+    condition: service_healthy
+
 services:
   db:
     image: mysql:8.4
     restart: unless-stopped
+
+    # Só loopback: deixa o Dart rodando fora do Docker acessar 127.0.0.1:3306
+    # sem expor o MySQL para a rede.
+    ports:
+      - "127.0.0.1:3306:3306"
     environment:
       MYSQL_DATABASE: auventura
       MYSQL_USER: auventura
@@ -23,12 +46,12 @@ services:
       retries: 20
       start_period: 30s
 
+  # Mantém o nome barramento-service para os demais serviços continuarem
+  # usando BARRAMENTO_URL sem mudança.
   barramento-service:
-    image: auventura/backend:local
+    image: auventura/barramento-dart:local
     build:
-      context: ./back
-      dockerfile: Dockerfile
-    command: ["node", "services/barramento-service/index.js"]
+      context: ./back/services/barramento-service-dart
     restart: unless-stopped
     environment:
       BARRAMENTO_PORT: "10000"
@@ -37,35 +60,38 @@ services:
       notificacoes-service:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "node", "-e", "require('http').get('http://127.0.0.1:10000/health', r => process.exit(r.statusCode === 200 ? 0 : 1)).on('error', () => process.exit(1))"]
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:10000/health"]
       interval: 5s
       timeout: 3s
       retries: 12
       start_period: 5s
 
+  # Versão Dart (back/services/user-service-dart). Não cria tabelas: quem cria
+  # é o initializeDatabase dos serviços Node. Como o barramento só fica healthy
+  # depois do notificacoes-service, a tabela users já existe quando este sobe.
   user-service:
-    image: auventura/backend:local
+    image: auventura/user-service-dart:local
     build:
-      context: ./back
-      dockerfile: Dockerfile
-    command: ["node", "services/user-service/index.js"]
+      context: ./back/services/user-service-dart
     restart: unless-stopped
-    environment: &backend-environment
+    environment:
+      APP_ENV: production
+      SERVER_PORT: "3001"
       DB_HOST: db
       DB_PORT: "3306"
       DB_NAME: auventura
       DB_USER: auventura
       DB_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in .env}
       JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET in .env}
-      JWT_EXPIRATION: 2h
+      JWT_EXPIRATION_HOURS: "2"
       BARRAMENTO_URL: http://barramento-service:10000
-      USER_SERVICE_PORT: "3001"
-    depends_on: &backend-dependencies
-      db:
-        condition: service_healthy
-      barramento-service:
-        condition: service_healthy
-    healthcheck: *backend-healthcheck
+    depends_on: *backend-dependencies
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:3001/health/ready"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 10s
 
   depoimentos-service:
     image: auventura/backend:local

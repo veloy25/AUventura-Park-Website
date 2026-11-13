@@ -13,7 +13,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 http.Response _json(Object corpo, [int status = 200]) =>
     http.Response.bytes(utf8.encode(jsonEncode(corpo)), status);
 
-// Abre a tela de login por cima de outra, como o app faz pelo bonequinho.
 Future<void> _abrir(WidgetTester tester) async {
   GoogleFonts.config.allowRuntimeFetching = false;
   tester.view.physicalSize = const Size(750, 1624);

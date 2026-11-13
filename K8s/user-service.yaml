@@ -21,17 +21,38 @@ spec:
       containers:
         - name: user-service
 
-          image: auventura/backend:local
+          # Versão em Dart (back/services/user-service-dart). O executável já
+          # vem compilado na imagem, por isso não há "command".
+          image: auventura/user-service-dart:local
           imagePullPolicy: Never
-
-          command:
-            - node
-            - services/user-service/index.js
 
           ports:
             - containerPort: 3001
 
+          # Liveness não toca no banco: o MySQL fora do ar não deve fazer o
+          # Kubernetes reiniciar um processo saudável. Readiness consulta o
+          # banco: sem ele o Pod sai do Service até voltar.
+          livenessProbe:
+            httpGet:
+              path: /health/live
+              port: 3001
+            initialDelaySeconds: 5
+            periodSeconds: 10
+
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: 3001
+            initialDelaySeconds: 5
+            periodSeconds: 5
+
           env:
+            - name: APP_ENV
+              value: production
+
+            - name: SERVER_PORT
+              value: "3001"
+
             - name: DB_HOST
               value: db
 
@@ -56,11 +77,8 @@ spec:
                   name: auventura-secrets
                   key: JWT_SECRET
 
-            - name: JWT_EXPIRATION
-              value: 2h
-
-            - name: USER_SERVICE_PORT
-              value: "3001"
+            - name: JWT_EXPIRATION_HOURS
+              value: "2"
 
             - name: BARRAMENTO_URL
               value: http://barramento-service:10000

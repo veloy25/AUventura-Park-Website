@@ -59,10 +59,10 @@ class HomePage extends StatelessWidget {
               vertical: 7,
             ),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.10),
+              color: Colors.white.withValues(alpha: 0.10),
               borderRadius: BorderRadius.circular(30),
               border: Border.all(
-                color: Colors.white.withOpacity(0.18),
+                color: Colors.white.withValues(alpha: 0.18),
               ),
             ),
             child: const Row(
@@ -114,7 +114,7 @@ class HomePage extends StatelessWidget {
             style: GoogleFonts.dmSans(
               fontSize: 15,
               height: 1.55,
-              color: Colors.white.withOpacity(0.78),
+              color: Colors.white.withValues(alpha: 0.78),
             ),
           ),
           const SizedBox(height: 24),
@@ -142,7 +142,7 @@ class HomePage extends StatelessWidget {
               style: OutlinedButton.styleFrom(
                 foregroundColor: Colors.white,
                 side: BorderSide(
-                  color: Colors.white.withOpacity(0.30),
+                  color: Colors.white.withValues(alpha: 0.30),
                 ),
                 padding: const EdgeInsets.symmetric(vertical: 14),
                 shape: RoundedRectangleBorder(
@@ -407,6 +407,13 @@ class HomePage extends StatelessWidget {
               width: double.infinity,
               height: 220,
               fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) => Container(
+                width: double.infinity,
+                height: 220,
+                color: Cores.sand,
+                alignment: Alignment.center,
+                child: const Text('🐾', style: TextStyle(fontSize: 48)),
+              ),
             ),
           ),
         ],
@@ -474,7 +481,7 @@ class HomePage extends StatelessWidget {
             style: GoogleFonts.dmSans(
               fontSize: 14,
               height: 1.5,
-              color: Colors.white.withOpacity(0.72),
+              color: Colors.white.withValues(alpha: 0.72),
             ),
           ),
           const SizedBox(height: 22),

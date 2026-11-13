@@ -18,9 +18,7 @@ import '../services/pets_service.dart';
 import '../services/sessao.dart';
 import '../theme/cores.dart';
 
-// Formulário do Daycare, o mesmo fluxo de front/src/pages/Daycare.jsx:
-// plano avulso (um dia, com consulta de vagas) ou plano recorrente
-// (frequência, dias da semana e data de início).
+// Mesmo fluxo de front/src/pages/Daycare.jsx.
 class DaycarePage extends StatefulWidget {
   const DaycarePage({super.key});
 
@@ -184,7 +182,7 @@ class _DaycarePageState extends State<DaycarePage> {
       setState(
         () => _sucesso = 'Agendamento de Daycare criado com sucesso! 🎉',
       );
-      // Volta para a aba Serviços, como o site faz depois de 2 segundos.
+      // A navegação já foi para o My Pet; aqui só fecha o formulário.
       _voltarAposSucesso = Timer(const Duration(seconds: 2), () {
         if (mounted) Navigator.of(context).popUntil((rota) => rota.isFirst);
       });

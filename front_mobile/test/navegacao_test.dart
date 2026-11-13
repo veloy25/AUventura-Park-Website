@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:front_mobile/main.dart';
 import 'package:front_mobile/models/usuario.dart';
+import 'package:front_mobile/services/agendamentos_service.dart';
 import 'package:front_mobile/services/sessao.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
@@ -109,4 +110,56 @@ void main() {
       );
     },
   );
+
+  group('agendamentos ficam no My Pet', () {
+    Future<void> comTutorLogado(
+      WidgetTester tester,
+      Future<void> Function() corpo,
+    ) async {
+      GoogleFonts.config.allowRuntimeFetching = false;
+      tester.view.physicalSize = const Size(750, 1624);
+      tester.view.devicePixelRatio = 2;
+      addTearDown(tester.view.reset);
+      final client = MockClient(
+        (_) async => throw http.ClientException('sem rede'),
+      );
+
+      await http.runWithClient(() async {
+        await tester.pumpWidget(const AuventuraApp());
+        await tester.pumpAndSettle();
+        await sessao.entrar('tok', _usuario);
+        await tester.pumpAndSettle();
+        await corpo();
+      }, () => client);
+    }
+
+    testWidgets('a aba Serviços não lista mais agendamentos', (tester) async {
+      await comTutorLogado(tester, () async {
+        await tester.tap(find.text('Serviços'));
+        await tester.pumpAndSettle();
+
+        expect(find.text('Serviços Disponíveis'), findsOneWidget);
+        expect(find.text('Meus Agendamentos'), findsNothing);
+      });
+    });
+
+    testWidgets('agendamento criado leva o tutor para o My Pet', (
+      tester,
+    ) async {
+      await comTutorLogado(tester, () async {
+        await tester.tap(find.text('Serviços'));
+        await tester.pumpAndSettle();
+        expect(
+          find.text('Olá, Ana!'),
+          findsNothing,
+          reason: 'está em Serviços',
+        );
+
+        agendamentoCriado.value++;
+        await tester.pumpAndSettle();
+
+        expect(find.text('Olá, Ana!'), findsOneWidget);
+      });
+    });
+  });
 }
