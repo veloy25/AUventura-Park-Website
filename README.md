@@ -2,6 +2,15 @@
 
 O AUventura Park é uma plataforma para tutores e equipe de uma creche para cães. O projeto oferece aplicações web e mobile conectadas a uma API composta por microsserviços.
 
+## 🎥 Apresentação do Projeto
+
+A apresentação final do projeto **AUventura Park** está disponível no YouTube para avaliação dos professores.
+
+🔗 **Link da apresentação:**  
+https://youtu.be/utrT8SG_MJ8
+
+O vídeo apresenta a arquitetura da solução, integração entre Front End e Back End, microsserviços, uso de Dart e Flutter, banco de dados, pool de conexões, abstração da camada de persistência, Docker, Kubernetes e demais funcionalidades desenvolvidas ao longo do projeto.
+
 ## Funcionalidades
 
 - Cadastro, login e consulta do perfil do usuário.
